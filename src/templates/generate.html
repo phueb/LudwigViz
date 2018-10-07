@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block rnnlabtop %}
+    <a href="{{ url_for('btns', model_name=model_name) }}">
+        <div class="mdl-card__title">
+            <h3 class="mdl-card__title-text">
+                {{ model_name }} @ timepoint {{ timepoint }} | {{ hub_mode }}
+            </h3>
+        </div>
+    </a>
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--4-col">
+            <a href="{{ url_for('delete_one', model_name=model_name) }}" class="mdl-button">delete model</a>
+        </div>
+        <div class="mdl-cell mdl-cell--4-col">
+            <a href="{{ url_for('generate', model_name=model_name) }}" class="mdl-button">generate terms</a>
+        </div>
+        <div class="mdl-cell mdl-cell--4-col">
+            <a href="{{ url_for('show_windows', model_name=model_name) }}" class="mdl-button">show windows</a>
+        </div>
+        <div class="mdl-cell mdl-cell--4-col">
+            <a href="{{ url_for('export_neighbors', model_name=model_name) }}" class="mdl-button">export neighbors</a>
+        </div>
+        <div class="mdl-cell mdl-cell--4-col">
+            <a href="{{ url_for('export_acts', model_name=model_name) }}" class="mdl-button">export word vectors</a>
+        </div>
+        <div class="mdl-cell mdl-cell--4-col">
+            <a href="{{ url_for('export_pca_loadings', model_name=model_name) }}" class="mdl-button">export pca</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block rnnlabmiddle %}
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">Generate Terms from Input:</h3>
+    </div>
+    <div class="mdl-card__supporting-text">
+        <form action="{{ url_for('generate', model_name=model_name) }}" id="form-task_btn_strs">
+            <div class="mdl-textfield mdl-js-textfield ">
+                {{ form.field(type='text', class='mdl-textfield__input')|safe }}
+            </div>
+        </form>
+        {% if form.field.errors %}
+            {% for error in form.field.errors %}
+                <span style="color:red">{{ error }}</span>
+            {% endfor %}
+        {% endif %}
+        {% for num_samples in num_samples_list %}
+            {% if phrase %}
+                <h4>Num samples: {{ num_samples }}</h4>
+                {% for output in output_dict[num_samples] %}
+                    <p><strong>{{ phrase }}&nbsp;</strong>{{ output }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="mdl-card__supporting-text">
+        {% for task_btn_str in task_btn_strs %}
+            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect inlineradio"
+                   for="task_btn_str_id{{ loop.index0 }}">
+                <input type="radio" id="task_btn_str_id{{ loop.index0 }}" class="mdl-radio__button"
+                       name="task_btn_str" value="{{ task_btn_str }}" form="form-task_btn_strs">
+                <span class="mdl-radio__label">{{ task_btn_str }}</span>
+            </label>
+        {% endfor %}
+    </div>
+    <div class="mdl-card__actions mdl-card--border">
+        <input type="submit" name="task_btn_str-new" class="mdl-button" value="Generate" form="form-task_btn_strs">
+    </div>
+
+{% endblock %}
+
+{% block rnnlabbottom %}
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            $('.rnnlab-bottom').hide();
+        });
+    </script>
+{% endblock %}

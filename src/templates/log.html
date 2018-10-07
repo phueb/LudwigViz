@@ -1,0 +1,168 @@
+{% extends "layout.html" %}
+
+{% block rnnlabtop %}
+    <div class="mdl-card__title needs-any">
+        <h3 class="mdl-card__title-text">Multi Group Actions:</h3>
+    </div>
+    <div class="mdl-grid needs-any">
+        {% for multi_group_btn_name in multi_group_btn_names %}
+            <div class="mdl-cell mdl-cell--4-col">
+                <input type="submit" name="group_btn_name" value="{{ multi_group_btn_name }}" class="mdl-button" form="form-group_action">
+            </div>
+        {% endfor %}
+        <div class="mdl-cell mdl-cell--4-col">
+            <input type="submit" name="delete_many" class="mdl-button" value="Delete" form="form-group_action">
+        </div>
+    </div>
+    <div class="mdl-card__title needs-2">
+        <h3 class="mdl-card__title-text">2 Group Actions:</h3>
+    </div>
+    <div class="mdl-grid needs-2">
+        {% for two_group_btn_name in two_group_btn_names %}
+            <div class="mdl-cell mdl-cell--4-col">
+                <input type="submit" name="group_btn_name" value="{{ two_group_btn_name }}" class="mdl-button" form="form-group_action">
+            </div>
+        {% endfor %}
+    </div>
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">Global Actions:</h3>
+    </div>
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--4-col">
+            <input type="submit" name="delete_all" class="mdl-button" value="Delete All" form="form-global_action">
+        </div>
+        <div class="mdl-cell mdl-cell--4-col">
+            <input type="submit" name="summarize_all" class="mdl-button" value="Summarize All" form="form-global_action">
+        </div>
+    </div>
+{% endblock %}
+
+{% block rnnlabmiddle %}
+    {% if log_dicts %}
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">Logged Models:</h3>
+    </div>
+    <div class="containstable">
+        <table class="mdl-data-table mdl-js-data-table">
+            <thead>
+            <tr>
+                {% for table_header in table_headers %}
+                    <th class="mdl-data-table__cell--non-numeric">{{ table_header }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for log_dict in log_dicts %}
+                {% set grouploop = loop %}
+                {% for data_row in log_dict['data_rows'] %}
+                    {% set model_name = data_row[0] %}
+                    <tr class="clickable" data-href='{{ url_for('btns', model_name=model_name) }}'>
+                        {% if loop.index0 == 0 %}
+                            <td class="mdl-data-table__cell--non-numeric">
+                                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select"
+                                       for="group_id{{ grouploop.index0 }}">
+                                    <input type="checkbox" id="group_id{{ grouploop.index0 }}"
+                                           class="mdl-checkbox__input"
+                                           name="log_dict_id" value="{{ grouploop.index0 }}" form="form-group_action">
+                                    <span class="mdl-checkbox__label">{{ grouploop.index0 }}</span>
+                                </label>
+                            </td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                        {% for d in data_row %}
+                            <td class="mdl-data-table__cell--non-numeric">{{ d }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">No models logged</h3>
+    </div>
+    {% endif %}
+
+    <script type='text/javascript'>
+    $(document).ready(function() {
+        $("td input").click(function (e) {
+            e.stopPropagation();
+        });
+        $(".clickable").click(function (e) {
+            if (e.target.tagName !== 'SPAN') {
+                window.location = $(this).data("href");
+            }
+        });
+    });
+    </script>
+{% endblock %}
+
+{% block rnnlabbottom %}
+    <form action="{{ url_for('log') }}" id="form-group"></form>
+    <form action="{{ url_for('log_global_action') }}" id="form-global_action"></form>
+    <form action="{{ url_for('log_group_action') }}" id="form-group_action"></form>
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">Group models by:</h3>
+    </div>
+    <div class="mdl-card__supporting-text">
+        {% for config_name in all_config_names %}
+        <label for="group-chkbox{{ loop.index0 }}" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+            <input type="checkbox" name="config_names" id="group-chkbox{{ loop.index0 }}"
+                   class="mdl-checkbox__input" value="{{ config_name }}" form="form-group">
+            <span class="mdl-checkbox__label">{{ config_name }}</span>
+        </label>
+        {% endfor %}
+        <input type="submit" name="config_names-new" class="mdl-button" value="Group" form="form-group">
+        <input type="submit" name="config_names-default" class="mdl-button" value="Default" form="form-group">
+    </div>
+    <div class="mdl-card__actions mdl-card--border"></div>
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">Chose Hub Mode:</h3>
+    </div>
+    <form action="{{ url_for('log', model_name=model_name) }}">
+        <div class="mdl-card__supporting-text">
+            {% for hub_mode in hub_modes %}
+                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect inlineradio"
+                       for="hub_mode_id{{ loop.index0 }}">
+                    <input type="radio" id="hub_mode_id{{ loop.index0 }}" class="mdl-radio__button"
+                           name="hub_mode" value="{{ hub_mode }}">
+                    <span class="mdl-radio__label">{{ hub_mode }}</span>
+                </label>
+            {% endfor %}
+            <input type="submit" name="hub_mode-new" class="mdl-button" value="Update">
+        </div>
+    </form>
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            $('.needs-2').css('color', 'lightgrey');
+            $('.needs-any').css('color', 'lightgrey');
+            $('input[type="checkbox"]').click(function(e){
+                var num_checkboxes_clicked = $("input[name='" + $(this).attr('name') + "']:checked").length;
+                $.ajax({
+                    url: '{{ url_for("which_hidden_btns") }}',
+                    data: {num_checkboxes_clicked: num_checkboxes_clicked},
+                    success: function(result){
+                        if (result === 'both') {
+                            $('.needs-2').css('color', '');
+                            $('.needs-any').css('color', '');
+                        }
+                        else if (result === 'any') {
+                            $('.needs-2').css('color', 'lightgrey');
+                            $('.needs-any').css('color', '');
+                        }
+                        else if (result === 'none') {
+                            $('.needs-2').css('color', 'lightgrey');
+                            $('.needs-any').css('color', 'lightgrey');
+                        }
+                    }
+                });
+
+
+            });
+        });
+    </script>
+{% endblock %}
+
+

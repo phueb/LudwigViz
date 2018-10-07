@@ -1,0 +1,66 @@
+
+html, body {
+  font-family: 'Roboto', 'Helvetica', sans-serif;
+}
+
+a {
+    text-decoration: None;
+}
+
+.rnnlab-layout {
+    background-color: #f3f3f3;
+}
+
+#title {
+    color: white;;
+}
+#version {
+    margin: 20px;
+    overflow: hidden;
+    max-height: 20px;
+    color: white;
+}
+
+.rnnlab-top, .rnnlab-middle, .rnnlab-bottom {
+    margin: 10px auto;
+    min-width: 768px;
+}
+
+.rnnlab-middle {
+    padding-bottom: 10px;
+}
+
+.rnnlab-top-text-float {
+    width: 300px;
+    display: inline-grid;
+}
+
+.rnnlab-top-btn-float {
+    display: inline-grid;
+    margin-right: 140px;
+}
+
+.rnnlab-img {
+    display:block;
+}
+
+table {
+    border: 0 !important;
+    margin: auto;
+}
+
+div.containstable {
+    overflow-x: auto;
+    width: 95%;
+    margin: auto;
+    padding-bottom: 20px;
+}
+
+.blockedradio {
+    display: block;
+}
+
+.inlineradio {
+    display: inline-block;
+    padding: 0px 5px;
+}
