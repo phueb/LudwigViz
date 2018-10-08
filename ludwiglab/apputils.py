@@ -8,9 +8,62 @@ from sklearn.decomposition import PCA
 from wtforms.validators import ValidationError
 from wtforms import Form, StringField
 from pathlib import Path
+from itertools import chain
 
-from options import __version__
-from configs import GlobalConfigs, AppConfigs, FigsConfigs
+
+def make_log_dicts(logger, config_names):
+    log_entry_dicts = logger.load_log()
+    # df
+    column_names = ['model_name'] + config_names + ['timepoint']
+    column_names += ['num_saves'] if 'num_saves' not in config_names else []
+    df = pd.DataFrame(data={column_name: [d[column_name] for d in log_entry_dicts]
+                            for column_name in column_names})[column_names]
+    # make log_dicts
+    log_dicts = []
+    for config_values, group_df in df.groupby(config_names):
+        if not isinstance(config_values, tuple):
+            config_values = [config_values]
+        model_names = group_df['model_name'].tolist()
+        log_dict = {'model_names': model_names,
+                    'flavor': model_names[0].split('_')[1],
+                    'model_desc': '\n'.join('{}={}'.format(config_name, config_value)
+                                            for config_name, config_value in zip(config_names, config_values)),
+                    'data_rows': [row.tolist() for ow_id, row in group_df.iterrows()]}
+        log_dicts.append(log_dict)
+    results = log_dicts[::-1]
+    return results
+
+
+def make_common_timepoint(logger, model_names_list, common_timepoint=config.Interface.common_timepoint):
+    timepoints_list_list = []
+    for model_names in model_names_list:
+        timepoints_list = [logger.get_timepoints(model_name) for model_name in model_names]
+        timepoints_list_list.append(timepoints_list)
+    sets = [set(list(chain(*l))) for l in timepoints_list_list]
+    # default
+    if common_timepoint is not None and common_timepoint in set.intersection(*sets):
+        print('Using default common timepoint: {}'.format(common_timepoint))
+        return common_timepoint
+    else:
+        print('Did not find default common timepoint.')
+    # common
+    result = max(set.intersection(*sets))
+    print('Found last common timepoint: {}'.format(result))
+    return result
+
+
+def make_log_df(summary_flavors, summary_hostnames):
+    log_file_paths = [config.Dirs.log / f.name for f in config.Dirs.log.glob('log*.*')
+                      if f.stem.split('_')[-1] in summary_hostnames]
+    if not log_file_paths:
+        result = pd.DataFrame()  # in case no matching log files found
+    else:
+        result = pd.DataFrame(pd.concat((pd.read_csv(f) for f in log_file_paths)))
+        if not result.empty:
+            result['flavor'] = result['model_name'].apply(lambda model_name: model_name.split('_')[1])
+            result = result[result['timepoint'] == result['num_saves']]
+            result = result[result['flavor'].isin(summary_flavors)]
+    return result
 
 
 class RnnlabEmptySubmission(Exception):
@@ -48,7 +101,7 @@ def make_template_dict(session):
 
 def get_requested_log_dicts(logger, session, request):
     config_names = make_requested(request, session, 'config_names', default=logger.manipulated_config_names)
-    log_dicts = logger.make_log_dicts(config_names)
+    log_dicts = make_log_dicts(logger, config_names)
     log_dict_ids = [int(i) for i in request.args.getlist('log_dict_id')]
     requested_log_dicts = [log_dicts[i] for i in log_dict_ids]
     return requested_log_dicts

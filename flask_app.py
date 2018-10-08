@@ -7,27 +7,32 @@ import argparse
 from itertools import chain
 import pandas as pd
 
-from apputils import make_form
-from apputils import figs_to_imgs
-from apputils import generate_terms
-from apputils import get_log_dicts_values
-from apputils import get_requested_log_dicts
-from apputils import make_model_btn_name_info_dict
-from apputils import make_requested
-from apputils import make_template_dict
-from apputils import write_acts_tsv_file
-from apputils import write_pca_loadings_files
-from apputils import write_probe_neighbors_files
-from apputils import save_probes_fs_mat
-from apputils import load_configs_dict
-from apputils import RnnlabAppError
-from apputils import RnnlabEmptySubmission
-from model_figs import model_btn_name_figs_fn_dict
-from group_figs import group_btn_name_figs_fn_dict
-from logger import Logger
-from model import Model
-from hub import Hub
-from configs import AppConfigs, GlobalConfigs
+from ludwiglab.apputils import make_log_dicts
+from ludwiglab.apputils import make_common_timepoint
+from ludwiglab.apputils import make_log_df
+from ludwiglab.apputils import make_form
+from ludwiglab.apputils import figs_to_imgs
+from ludwiglab.apputils import generate_terms
+from ludwiglab.apputils import get_log_dicts_values
+from ludwiglab.apputils import get_requested_log_dicts
+from ludwiglab.apputils import make_model_btn_name_info_dict
+from ludwiglab.apputils import make_requested
+from ludwiglab.apputils import make_template_dict
+from ludwiglab.apputils import write_acts_tsv_file
+from ludwiglab.apputils import write_pca_loadings_files
+from ludwiglab.apputils import write_probe_neighbors_files
+from ludwiglab.apputils import save_probes_fs_mat
+from ludwiglab.apputils import load_configs_dict
+from ludwiglab.apputils import RnnlabAppError
+from ludwiglab.apputils import RnnlabEmptySubmission
+from ludwiglab.model_figs import model_btn_name_figs_fn_dict
+from ludwiglab.group_figs import group_btn_name_figs_fn_dict
+from ludwiglab.model import Model
+from ludwiglab import config
+
+from ludwigcluster.logger import Logger
+from chjildeshub.hub import Hub
+
 
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
@@ -40,7 +45,7 @@ def log():
         logger.write_log()
     session.clear()
     config_names = make_requested(request, session, 'config_names', default=logger.manipulated_config_names)
-    log_dicts = logger.make_log_dicts(config_names)
+    log_dicts = make_log_dicts(logger, config_names)
     table_headers = ['group_id', 'model_name'] + config_names + ['timepoint', 'num_saves']
     multi_group_btn_names = sorted(AppConfigs.MULTI_GROUP_BTN_NAME_INFO_DICT.keys())
     two_group_btn_names = sorted(AppConfigs.TWO_GROUP_BTN_NAME_INFO_DICT.keys())
@@ -114,7 +119,7 @@ def log_group_action():
         return 'Please select at least 1 model group.'
     model_names_list = get_log_dicts_values(requested_log_dicts, 'model_names')
     # load models
-    common_timepoint = logger.make_common_timepoint(model_names_list)
+    common_timepoint = make_common_timepoint(logger, model_names_list)
     if int(common_timepoint) == 0:  # might be due to insertion of P_NOISE or different corpus
         print('///\nrnnlab WARNING: last common mb is 0.\n///')
     model_groups = []
@@ -235,7 +240,7 @@ def field(model_name, btn_name):
 @app.route('/delete_all/', methods=['GET', 'POST'])
 def delete_all():
     config_names = session['config_names']
-    log_dicts = logger.make_log_dicts(config_names)
+    log_dicts = make_log_dicts(logger, config_names)
     model_names_list = get_log_dicts_values(log_dicts, 'model_names')
     for model_name in chain(*model_names_list):
         logger.delete_model(model_name)
@@ -260,7 +265,7 @@ def get_stats():
     # summary_hostnames
     hostnames = [GlobalConfigs.BACKUP_HOSTNAME, GlobalConfigs.HOSTNAME]
     summary_hostnames = make_requested(request, session, 'summary_hostnames', default=hostnames)
-    log_df = logger.make_log_df(summary_flavors, summary_hostnames)
+    log_df = make_log_df(summary_flavors, summary_hostnames)
     # stats_table
     if not log_df.empty:
         group_tables = []
