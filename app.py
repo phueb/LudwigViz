@@ -7,24 +7,19 @@ import argparse
 from itertools import chain
 import pandas as pd
 
-from ludwiglab.apputils import make_log_dicts
-from ludwiglab.apputils import make_common_timepoint
-from ludwiglab.apputils import make_log_df
-from ludwiglab.apputils import make_form
-from ludwiglab.apputils import figs_to_imgs
-from ludwiglab.apputils import generate_terms
-from ludwiglab.apputils import get_log_dicts_values
-from ludwiglab.apputils import get_requested_log_dicts
-from ludwiglab.apputils import make_model_btn_name_info_dict
-from ludwiglab.apputils import make_requested
-from ludwiglab.apputils import make_template_dict
-from ludwiglab.apputils import write_acts_tsv_file
-from ludwiglab.apputils import write_pca_loadings_files
-from ludwiglab.apputils import write_probe_neighbors_files
-from ludwiglab.apputils import save_probes_fs_mat
-from ludwiglab.apputils import load_configs_dict
-from ludwiglab.apputils import RnnlabAppError
-from ludwiglab.apputils import RnnlabEmptySubmission
+from ludwiglab.app_utils import make_form
+from ludwiglab.app_utils import figs_to_imgs
+from ludwiglab.app_utils import generate_terms
+from ludwiglab.app_utils import get_log_dicts_values
+from ludwiglab.log_utils import get_requested_log_dicts, make_log_dicts, make_common_timepoint, make_log_df
+from ludwiglab.app_utils import make_model_btn_name_info_dict
+from ludwiglab.app_utils import make_requested
+from ludwiglab.app_utils import make_template_dict
+from ludwiglab.io_utils import write_pca_loadings_files, save_probes_fs_mat, write_probe_neighbors_files, \
+    write_acts_tsv_file
+from ludwiglab.app_utils import load_configs_dict
+from ludwiglab.app_utils import RnnlabAppError
+from ludwiglab.app_utils import RnnlabEmptySubmission
 from ludwiglab.model_figs import model_btn_name_figs_fn_dict
 from ludwiglab.group_figs import group_btn_name_figs_fn_dict
 from ludwiglab.model import Model
@@ -262,10 +257,7 @@ def get_stats():
     # summary_flavors
     flavors_in_logs = logger.get_config_values_from_log('flavor')
     summary_flavors = make_requested(request, session, 'summary_flavors', default=flavors_in_logs)
-    # summary_hostnames
-    hostnames = [GlobalConfigs.BACKUP_HOSTNAME, GlobalConfigs.HOSTNAME]
-    summary_hostnames = make_requested(request, session, 'summary_hostnames', default=hostnames)
-    log_df = make_log_df(summary_flavors, summary_hostnames)
+    log_df = make_log_df(logger, summary_flavors)
     # stats_table
     if not log_df.empty:
         group_tables = []
@@ -281,8 +273,6 @@ def get_stats():
                            template_dict=make_template_dict(session),
                            imgs_desc=imgs_desc,
                            group_tables=group_tables,
-                           summary_hostnames=summary_hostnames,
-                           hostnames=hostnames,
                            summary_flavors=summary_flavors,
                            flavors_in_logs=flavors_in_logs,
                            config_names=config_names)
