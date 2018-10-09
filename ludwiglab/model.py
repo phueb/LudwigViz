@@ -14,12 +14,12 @@ from hub import Hub
 from options import default_configs_dict
 
 
-class Model:
+class Model:  # TODO strip out all user-specific stuff and keep the rest in a base class to inherit from
     """
     Stores data associated with trained model
     """
 
-    def __init__(self, model_name, timepoint, hub=None):
+    def __init__(self, model_name, timepoint, hub=None):  # TODO turn configs_Dcit into class with properties to simplify development
         self.model_name = model_name
         self.timepoint = timepoint
         self.mb_name = self.ckpt_mb_names[timepoint]

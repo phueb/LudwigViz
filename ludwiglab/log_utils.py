@@ -5,6 +5,24 @@ from ludwiglab import config
 from ludwiglab.app_utils import make_requested
 
 
+def get_config_values_from_log(logger, config_name, req_completion=True):
+    values = set()
+    log_entry_dicts = logger.load_log()
+    for log_entry_d in log_entry_dicts:
+        if req_completion:
+            if log_entry_d['timepoint'] == log_entry_d['num_saves']:
+                try:
+                    config_value = log_entry_d[config_name]
+                except KeyError:  # sometimes new config names are added
+                    print('rnnlab WARNING: Did not find "{}" in main log.'.format(config_name))
+                    continue
+                values.add(config_value)
+        else:
+            values.add(log_entry_d[config_name])
+    result = list(values)
+    return result
+
+
 def get_timepoints(logger, model_name):
     last_timepoint = [d['timepoint'] for d in logger.load_log()
                       if d['model_name'] == model_name][0]
@@ -18,7 +36,7 @@ def get_manipulated_config_names(logger):
     """
     result = []
     for config_name in logger.all_config_names:
-        config_values = logger.get_config_values_from_log(config_name, req_completion=False)
+        config_values = get_config_values_from_log(logger, config_name, req_completion=False)
         is_manipulated = True if len(list(set(config_values))) > 1 else False
         if is_manipulated and config_name in logger.all_config_names:
             result.append(config_name)

@@ -7,16 +7,24 @@ import argparse
 from itertools import chain
 import pandas as pd
 
+from ludwiglab.io_utils import write_pca_loadings_files
+from ludwiglab.io_utils import save_probes_fs_mat
+from ludwiglab.io_utils import write_probe_neighbors_files
+from ludwiglab.io_utils import write_acts_tsv_file
+
+from ludwiglab.log_utils import get_config_values_from_log
+from ludwiglab.log_utils import get_requested_log_dicts
+from ludwiglab.log_utils import make_log_dicts
+from ludwiglab.log_utils import make_common_timepoint
+from ludwiglab.log_utils import make_log_df
+
 from ludwiglab.app_utils import make_form
 from ludwiglab.app_utils import figs_to_imgs
 from ludwiglab.app_utils import generate_terms
 from ludwiglab.app_utils import get_log_dicts_values
-from ludwiglab.log_utils import get_requested_log_dicts, make_log_dicts, make_common_timepoint, make_log_df
 from ludwiglab.app_utils import make_model_btn_name_info_dict
 from ludwiglab.app_utils import make_requested
 from ludwiglab.app_utils import make_template_dict
-from ludwiglab.io_utils import write_pca_loadings_files, save_probes_fs_mat, write_probe_neighbors_files, \
-    write_acts_tsv_file
 from ludwiglab.app_utils import load_configs_dict
 from ludwiglab.app_utils import RnnlabAppError
 from ludwiglab.app_utils import RnnlabEmptySubmission
@@ -28,6 +36,13 @@ from ludwiglab import config
 from ludwigcluster.logger import Logger
 from chjildeshub.hub import Hub
 
+
+# TODO i don't think this can be converted into a general-purpose neural network interface - there are too many rnn-specific things
+# TODO -> merge this with rnnlab or call this rnnlab
+# TODO or get rid of all rnn specific things and put those into the starting_small code (or different code, or delete?)
+
+
+# TODO make configs_dict into someother data structure that is forward + reverse compatible+ user can add and remove any entries
 
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
@@ -255,7 +270,7 @@ def delete_many():
 def get_stats():
     config_names = session['config_names']
     # summary_flavors
-    flavors_in_logs = logger.get_config_values_from_log('flavor')
+    flavors_in_logs = get_config_values_from_log(logger, 'flavor')
     summary_flavors = make_requested(request, session, 'summary_flavors', default=flavors_in_logs)
     log_df = make_log_df(logger, summary_flavors)
     # stats_table
@@ -306,7 +321,7 @@ def show_windows(model_name):
                            windows_tables=windows_tables)
 
 
-@app.route('/generate/<string:model_name>', methods=['GET', 'POST'])  # TODO use celery queue to compute on gpu node, rather than server's cpu?
+@app.route('/generate/<string:model_name>', methods=['GET', 'POST'])
 def generate(model_name):
     phrase = None
     timepoint = int(make_requested(request, session, 'timepoint'))
