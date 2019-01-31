@@ -90,7 +90,6 @@ class AppConfigs(object):
         'w_norm': ('Norm of Weights', []),
         'softmax': ('Softmax Probabilities', [])}
     TWO_GROUP_BTN_NAME_INFO_DICT = {
-        'cat_ap_diff': ('Softmax Activations Differences', ['corpus_name']),
         'cat_probe_ba_diff': ('Balanced Accuracy Differences', ['corpus_name', 'sem_probes_name', 'syn_probes_name']),
         'correlations': ('Correlations', ['corpus_name', 'sem_probes_name', 'syn_probes_name'])}
 

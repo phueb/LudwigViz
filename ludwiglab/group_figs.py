@@ -1129,28 +1129,6 @@ def make_cat_ap_diff_figs(model_groups, model_descs, remove_punct=False):
         result = filtered_mat[np.sum(np.abs(filtered_mat), axis=1).argsort()]
         return result
 
-    def make_cat_ap_diff_fig(row, cat, cats, max_num_cats=50, ylim=0.2):  # TODO ylim
-        start = time.time()
-        # load data
-        y, xticklabels = zip(*sorted(zip(row, cats), key=lambda t: t[0], reverse=True)[:max_num_cats])
-        # fig
-        fig, ax = plt.subplots(figsize=(FigsConfigs.MAX_FIG_WIDTH, 3))
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.spines['bottom'].set_visible(False)
-        ax.tick_params(axis='both', which='both', top='off', right='off', bottom='off')
-        ax.set_ylabel('Softmax Diff', fontsize=FigsConfigs.AXLABEL_FONT_SIZE)
-        ax.set_xlabel('Correct Category: "{}"'.format(cat), fontsize=FigsConfigs.AXLABEL_FONT_SIZE)
-        ax.set_xticks(np.arange(len(cats)))
-        ax.set_xticklabels(xticklabels, fontsize=FigsConfigs.AXLABEL_FONT_SIZE, rotation=90)
-        ax.set_ylim([-ylim, ylim])
-        # plot
-        ax.plot(y, '.-', c='black', linewidth=FigsConfigs.LINEWIDTH)
-        ax.axhline(0, linestyle='--', color='grey')
-        fig.tight_layout()
-        print('{} completed in {:.1f} secs'.format(sys._getframe().f_code.co_name, time.time() - start))
-        return fig
-
     def make_avg_mats_fig(mat, cats, mode, vmax=0.25):
         start = time.time()
         # mat
@@ -1214,8 +1192,6 @@ def make_cat_ap_diff_figs(model_groups, model_descs, remove_punct=False):
             make_avg_mats_fig(pos_avg_mats[1], pos_cats, model_descs[1]),
             make_avg_mats_fig(probes_avg_mats_diff, model_groups[0][0].hub.probe_store.cats, mode='difference')]
     figs += [make_avg_mats_fig(pos_avg_mats_diff, pos_cats, mode=mode) for mode in ['improvement', 'worsening']]
-    figs += [make_cat_ap_diff_fig(row, cat, pos_cats)
-             for row, cat in zip(sort_rows(pos_avg_mats_diff), pos_cats)]
     return figs
 
 
@@ -1239,144 +1215,6 @@ def make_ap_by_cat_figs(model_groups, model_descs, remove_punct=False):
         # result
         result = {cat: y for cat, y in zip(cats, expected_y)}
         return result
-
-    def make_cat_average_precision_list_fig(cat_type):
-        start = time.time()
-        num_model_groups = len(model_groups)
-        palette = cycle(sns.color_palette("hls", num_model_groups))
-        # load data
-        cat_expected_y_dict = make_cat_expected_y_dict(cat_type)
-        cats_to_sort_by, expected_y = zip(*sorted(cat_expected_y_dict.items(), key=lambda t: t[1]))
-        num_cats = len(cats_to_sort_by)
-        xys = []
-        for models, model_desc in zip(model_groups, model_descs):
-            cat_ap_lists = []
-            for model_id, model in enumerate(models):
-                cat_ap_lists.append(model.calc_sorted_cat_ap_list(cat_type, cats_to_sort_by, remove_punct=remove_punct))
-            y = np.mean(np.asarray(cat_ap_lists), axis=0)
-            xys.append((y, model_desc))
-        # fig
-        fig, ax = plt.subplots(figsize=(FigsConfigs.MAX_FIG_WIDTH, 4), dpi=FigsConfigs.DPI)
-        plt.title('cat_type="{}"'.format(cat_type))
-        ax.set_ylabel('Average Precision', fontsize=FigsConfigs.AXLABEL_FONT_SIZE)
-        ax.set_xlabel('Category', fontsize=FigsConfigs.AXLABEL_FONT_SIZE)
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.tick_params(axis='both', which='both', top='off', right='off')
-        ax.set_xticks(np.arange(num_cats))
-        ax.set_xticklabels(cats_to_sort_by, rotation=90)
-        # plot
-        bar_width = 0.35
-        for x, (y, model_desc) in zip([np.arange(num_cats) + (bar_width * i) for i in range(len(xys))], xys):
-            c = next(palette)
-            ax.axhline(y=np.mean(y), color=c, zorder=3, linestyle='-', alpha=0.75)
-            ax.bar(x, expected_y, bar_width, zorder=3, color='grey')  # expected ap
-            ax.bar(x, y, bar_width, color=c, zorder=2, label=model_desc)
-        plt.legend(fontsize=FigsConfigs.LEG_FONTSIZE, frameon=False, loc='best')
-        plt.tight_layout()
-        print('{} completed in {:.1f} secs'.format(sys._getframe().f_code.co_name, time.time() - start))
-        return fig
-
-    def make_cats_ap_trajs_fig():
-        """
-        Returns fig showing average precision trajectory
-        """
-        start = time.time()
-        num_model_groups = len(model_groups)
-        palette = cycle(sns.color_palette("hls", num_model_groups))
-        # load data
-        xys = []
-        for models in model_groups:
-            trajs1 = []
-            trajs2 = []
-            for model in models:
-                traj1, traj2 = to_trajs(model, model.calc_cats_ap, ('pos', 'probes'))
-                trajs1.append(traj1)
-                trajs2.append(traj2)
-            x = models[0].get_data_step_axis()
-            traj_mat1 = np.asarray([traj[:len(x)] for traj in trajs1])
-            traj_mat2 = np.asarray([traj[:len(x)] for traj in trajs2])
-            y1 = np.mean(traj_mat1, axis=0)
-            y2 = np.mean(traj_mat2, axis=0)
-            sem1 = [stats.sem(row) for row in np.asarray(traj_mat1).T]
-            sem2 = [stats.sem(row) for row in np.asarray(traj_mat2).T]
-            xys.append((x, y1, y2, sem1, sem2))
-        # fig
-        fig, ax = plt.subplots(figsize=(FigsConfigs.MAX_FIG_WIDTH, 6))
-        plt.title(model_groups[0][0].hub.mode)
-        ax.set_ylabel('Mean Average Precision (+/-SEM)', fontsize=FigsConfigs.AXLABEL_FONT_SIZE)
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.tick_params(axis='both', which='both', top='off', right='off')
-        ax.set_xlabel('Mini Batch', fontsize=FigsConfigs.AXLABEL_FONT_SIZE)
-        ax.xaxis.set_major_formatter(FuncFormatter(human_format))
-        ax.yaxis.grid(True)
-        ax.set_ylim([0, 0.5])  # TODO improve
-        # plot
-        lines = []
-        for n, (x, y1, y2, sem1, sem2) in enumerate(xys):
-            color = next(palette)
-            # lines
-            l1, = ax.plot(x, y1, '-', linewidth=FigsConfigs.LINEWIDTH, color=color, linestyle='-')
-            l2, = ax.plot(x, y2, '-', linewidth=FigsConfigs.LINEWIDTH, color=color, linestyle='--')
-            lines.append((copy.copy(l1), copy.copy(l2)))
-            # sem
-            ax.fill_between(x, np.add(y1, sem1), np.subtract(y1, sem1), alpha=FigsConfigs.FILL_ALPHA, color='grey')
-            ax.fill_between(x, np.add(y2, sem2), np.subtract(y2, sem2), alpha=FigsConfigs.FILL_ALPHA, color='grey')
-        plt.tight_layout()
-        labels = ['part-of-speech', 'probes']
-        add_double_legend(ax, lines, labels, model_descs)
-        print('{} completed in {:.1f} secs'.format(sys._getframe().f_code.co_name, time.time() - start))
-        return fig
-
-    def make_cat_ap_traj_fig(cat):
-        """
-        Returns fig showing average precision trajectory for "cat"
-        """
-        assert hasattr(model_groups[0][0].hub, cat +  's')  # must be pos class
-        start = time.time()
-        num_model_groups = len(model_groups)
-        palette = cycle(sns.color_palette("hls", num_model_groups))
-        # load data
-        xys = []
-        for models in model_groups:
-            trajs1 = []
-            for model in models:
-                traj1 = to_traj(model, model.calc_pos_cat_ap, cat)  # TODO test
-                trajs1.append(traj1)
-            x = models[0].get_data_step_axis()
-            traj_mat1 = np.asarray([traj[:len(x)] for traj in trajs1])
-            y1 = np.mean(traj_mat1, axis=0)
-            sem1 = [stats.sem(row) for row in np.asarray(traj_mat1).T]
-            xys.append((x, y1,  sem1))
-        # fig
-        fig, ax = plt.subplots(figsize=(FigsConfigs.MAX_FIG_WIDTH, 6))
-        plt.title(cat)
-        ax.set_ylabel('Average Precision (+/-SEM)', fontsize=FigsConfigs.AXLABEL_FONT_SIZE)
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.tick_params(axis='both', which='both', top='off', right='off')
-        ax.set_xlabel('Mini Batch', fontsize=FigsConfigs.AXLABEL_FONT_SIZE)
-        ax.xaxis.set_major_formatter(FuncFormatter(human_format))
-        ax.yaxis.grid(True)
-        # ax.set_ylim([0, 0.5])  # TODO improve
-        # plot
-        for n, (x, y1, sem1) in enumerate(xys):
-            color = next(palette)
-            ax.plot(x, y1, '-', linewidth=FigsConfigs.LINEWIDTH, color=color, linestyle='-')
-            ax.fill_between(x, np.add(y1, sem1), np.subtract(y1, sem1), alpha=FigsConfigs.FILL_ALPHA, color='grey')
-        plt.tight_layout()
-        add_single_legend(ax, model_descs)
-        print('{} completed in {:.1f} secs'.format(sys._getframe().f_code.co_name, time.time() - start))
-        return fig
-
-    # figs
-    figs = [make_cat_ap_traj_fig('noun'),
-            # make_cat_average_precision_list_fig('pos'),
-            # make_cat_average_precision_list_fig('probes'),
-            make_cats_ap_trajs_fig(),
-            ]
-    return figs
 
 
 def make_correlations_figs(model_groups, model_descs):
@@ -1432,7 +1270,7 @@ def make_correlations_figs(model_groups, model_descs):
         print('{} completed in {:.1f} secs'.format(sys._getframe().f_code.co_name, time.time() - start))
         return fig
 
-    def make_cat_corr_fig(x_name, y_name):
+    def make_cat_corr_fig(y_name):
         """
         Return fig showing correlation between cat "x" and cat "y"
         """
@@ -1451,19 +1289,14 @@ def make_correlations_figs(model_groups, model_descs):
                                                 for l in model.get_sorted_cat_avg_probe_ba_lists(cats, 'shuffled')],
                                'avg_cat_fs_n': [np.mean(l)
                                                 for l in model.get_sorted_cat_avg_probe_ba_lists(cats, 'none')]}
-                if x_name == 'avg_cat_ap_probes':
-                    model_xs.append(model.calc_sorted_cat_ap_list('probes', cats))
-                elif x_name == 'avg_cat_context_cat_vs_item_goodness':
-                    model_xs.append(model.calc_avg_cat_context_cat_vs_item_goodness_list())
-                else:
-                    raise AttributeError('rnnlab: Invalid arg to "x_name.')
+                model_xs.append(model.calc_avg_cat_context_cat_vs_item_goodness_list())
                 model_ys.append(name_y_dict[y_name])
             xs.append(np.mean(model_xs, axis=0))
             ys.append(np.mean(model_ys, axis=0))
         y = np.subtract(*ys)
         y_name += ' difference'
         x = np.subtract(*xs)
-        x_name += ' difference'
+        x_name = 'avg_cat_context_cat_vs_item_goodness difference'
         # fig
         fig, ax = plt.subplots(figsize=(FigsConfigs.MAX_FIG_WIDTH, 3))
         ax.spines['right'].set_visible(False)
@@ -1480,14 +1313,13 @@ def make_correlations_figs(model_groups, model_descs):
         print('{} completed in {:.1f} secs'.format(sys._getframe().f_code.co_name, time.time() - start))
         return fig
 
-    # cat_x_names = ['avg_cat_ap_probes', 'avg_cat_context_cat_vs_item_goodness']
     cat_x_names = ['avg_cat_context_cat_vs_item_goodness']
     # probe_x_names = ['avg_probe_noun_sim_n', 'avg_probe_verb_sim_n', 'avg_probe_sim', 'median_probe_cg',
     #                  'avg_probe_loc', 'avg_probe_loc_asymmetry', 'probe_freq', 'probe_cat_freq',
     #                  'avg_probe_cat_pred_goodness']
     probe_x_names = ['avg_probe_noun_sim_n', 'avg_probe_verb_sim_n']
     figs = []
-    figs += [make_cat_corr_fig(x_name, 'avg_cat_fs_o') for x_name in cat_x_names]
+    figs += [make_cat_corr_fig('avg_cat_fs_o') for x_name in cat_x_names]
     # figs += [make_cat_corr_fig(x_name, 'avg_cat_fs_s') for x_name in cat_x_names]
     # figs += [make_cat_corr_fig(x_name, 'avg_cat_fs_n') for x_name in cat_x_names]
     # figs += [make_probe_corr_fig(x_name, 'avg_probe_fs_o') for x_name in probe_x_names]

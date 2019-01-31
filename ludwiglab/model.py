@@ -468,60 +468,6 @@ class Model:  # TODO strip out all user-specific stuff and keep the rest in a ba
             result.append(avg_cat_context_cat_sensitivity)
         return result
 
-    def calc_sorted_cat_ap_list(self, cat_type, cats_to_sort_by=None,
-                                max_x=2 ** 16, max_term_windows=16, remove_punct=False):  # memory maxes out > 100
-        # make cat_term_ids_list
-        if cat_type == 'pos':
-            cats = [cat + 's' for cat in sorted(GlobalConfigs.POS_TAGS_DICT.keys())]
-            if remove_punct:
-                cats.remove('punctuations')
-            cat_terms_list = [getattr(self.hub, cat) for cat in cats]
-            cats_to_sort_by = cats if cats_to_sort_by is None else cats_to_sort_by
-        elif cat_type == 'probes':
-            cats = self.hub.probe_store.cats
-            cat_terms_list = [self.hub.probe_store.cat_probe_list_dict[cat] for cat in cats]
-            cats_to_sort_by = cats if cats_to_sort_by is None else cats_to_sort_by
-        else:
-            raise AttributeError('rnnlab: Invalid arg to "cat_type".')
-        # make y_pred
-        num_cats = len(cat_terms_list)
-        y_pred = np.zeros((num_cats, self.hub.train_terms.num_types))
-        for row_id, cat_terms in enumerate(cat_terms_list):
-            windows_list = [self.hub.get_term_id_windows(cat_term, num_samples=max_term_windows)
-                            for cat_term in cat_terms]
-            windows = [window for windows in windows_list for window in windows]
-            if not windows:
-                print('rnnlab WARNING: Did not find category "{}"'.format(cats[row_id]))
-                continue
-            x = np.vstack(windows)[:max_x, :-1]  # -1 because last term is predicted
-            feed_dict = {self.graph.x: x}
-            softmax_probs = self.sess.run(self.graph.softmax_probs, feed_dict=feed_dict)
-            avg_softmax_probs = softmax_probs.mean(axis=0)
-            y_pred[row_id, :] = avg_softmax_probs
-        # score
-        cat_term_ids_list = [[self.hub.train_terms.term_id_dict[term] for term in cat_terms]
-                             for cat_terms in cat_terms_list]
-        y_true = np.zeros_like(y_pred)
-        for row_id, cat_term_ids in enumerate(cat_term_ids_list):
-            y_true[row_id, cat_term_ids] = 1
-        cat_ap_list = []
-        for t, p, cat in zip(y_true, y_pred, cats):
-            cat_ap = average_precision_score(t, p)
-            cat_ap_list.append(cat_ap)
-        # sort
-        result = list(zip(*sorted(zip(cat_ap_list, cats), key=lambda i: cats_to_sort_by.index(i[1]))))[0]
-        return result
-
-    def calc_cats_ap(self, cat_type):
-        result = np.mean(self.calc_sorted_cat_ap_list(cat_type))
-        return result
-
-    def calc_pos_cat_ap(self, cat):
-        cats = [cat + 's' for cat in sorted(GlobalConfigs.POS_TAGS_DICT.keys())]
-        cat_id = cats.index(cat + 's')
-        result = self.calc_sorted_cat_ap_list('pos')[cat_id]  # TODO test index
-        return result
-
     def calc_probes_cat_pred_goodness(self):
         try:
             del self.__dict__['avg_probe_cat_pred_goodness_list']  # invalidate cache
