@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block rnnlabtop %}
+{% block ludwigviztop %}
     <a href="{{ url_for('btns', model_name=model_name) }}">
         <div class="mdl-card__title">
             <h3 class="mdl-card__title-text">
@@ -30,7 +30,7 @@
     </div>
 {% endblock %}
 
-{% block rnnlabmiddle %}
+{% block ludwigvizmiddle %}
     <div class="mdl-card__title">
         <h3 class="mdl-card__title-text">{{ 'Select plot:' }}</h3>
     </div>
@@ -45,7 +45,7 @@
     </form>
 {% endblock %}
 
-{% block rnnlabbottom %}
+{% block ludwigvizbottom %}
     <div class="mdl-card__title">
         <h3 class="mdl-card__title-text">Chose timepoint:</h3>
     </div>

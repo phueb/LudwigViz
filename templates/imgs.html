@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block rnnlabtop %}
+{% block ludwigviztop %}
     <a href="{{ url_for('btns', model_name=model_name) }}">
         <div class="mdl-card__title">
             <h3 class="mdl-card__title-text">
@@ -17,19 +17,19 @@
     </div>
 {% endblock %}
 
-{% block rnnlabmiddle %}
+{% block ludwigvizmiddle %}
     <div class="mdl-card__title">
         <h3 class="mdl-card__title-text">{{ imgs_desc }}</h3>
     </div>
     {% for img in imgs %}
-        <img src="data:image/png;base64,{{ img }}" class="rnnlab-img">
+        <img src="data:image/png;base64,{{ img }}" class="ludwigviz-img">
     {% endfor %}
 {% endblock %}
 
-{% block rnnlabbottom %}
+{% block ludwigvizbottom %}
     <script type='text/javascript'>
         $(document).ready(function () {
-            $('.rnnlab-bottom').hide();
+            $('.ludwigviz-bottom').hide();
         });
     </script>
 {% endblock %}

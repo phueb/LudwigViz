@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block rnnlabtop %}
+{% block ludwigviztop %}
     <div class="mdl-card__title needs-any">
         <h3 class="mdl-card__title-text">Multi Group Actions:</h3>
     </div>
@@ -37,7 +37,7 @@
     </div>
 {% endblock %}
 
-{% block rnnlabmiddle %}
+{% block ludwigvizmiddle %}
     {% if log_dicts %}
     <div class="mdl-card__title">
         <h3 class="mdl-card__title-text">Logged Models:</h3>
@@ -99,9 +99,8 @@
     </script>
 {% endblock %}
 
-{% block rnnlabbottom %}
-    <form action="{{ url_for('log') }}" id="form-group"></form>
-    <form action="{{ url_for('log_global_action') }}" id="form-global_action"></form>
+{% block ludwigvizbottom %}
+    <form action="{{ url_for('project') }}" id="form-group"></form>
     <form action="{{ url_for('log_group_action') }}" id="form-group_action"></form>
     <div class="mdl-card__title">
         <h3 class="mdl-card__title-text">Group models by:</h3>
@@ -121,7 +120,7 @@
     <div class="mdl-card__title">
         <h3 class="mdl-card__title-text">Chose Hub Mode:</h3>
     </div>
-    <form action="{{ url_for('log', model_name=model_name) }}">
+    <form action="{{ url_for('project', model_name=model_name) }}">
         <div class="mdl-card__supporting-text">
             {% for hub_mode in hub_modes %}
                 <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect inlineradio"

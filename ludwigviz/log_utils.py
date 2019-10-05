@@ -1,8 +1,4 @@
-from itertools import chain
 import pandas as pd
-
-from ludwigviz import config
-from ludwigviz.app_utils import make_requested
 
 
 def get_config_values_from_log(logger, config_name, req_completion=True):
@@ -14,7 +10,7 @@ def get_config_values_from_log(logger, config_name, req_completion=True):
                 try:
                     config_value = log_entry_d[config_name]
                 except KeyError:  # sometimes new config names are added
-                    print('rnnlab WARNING: Did not find "{}" in main log.'.format(config_name))
+                    print('LudwigViz WARNING: Did not find "{}" in main log.'.format(config_name))
                     continue
                 values.add(config_value)
         else:
@@ -75,30 +71,3 @@ def make_log_dicts(logger, config_names):
         log_dicts.append(log_dict)
     results = log_dicts[::-1]
     return results
-
-
-def make_common_timepoint(logger, model_names_list, common_timepoint=config.Interface.common_timepoint):
-    timepoints_list_list = []
-    for model_names in model_names_list:
-        timepoints_list = [logger.get_timepoints(model_name) for model_name in model_names]
-        timepoints_list_list.append(timepoints_list)
-    sets = [set(list(chain(*l))) for l in timepoints_list_list]
-    # default
-    if common_timepoint is not None and common_timepoint in set.intersection(*sets):
-        print('Using default common timepoint: {}'.format(common_timepoint))
-        return common_timepoint
-    else:
-        print('Did not find default common timepoint.')
-    # common
-    result = max(set.intersection(*sets))
-    print('Found last common timepoint: {}'.format(result))
-    return result
-
-
-def make_log_df(logger, summary_flavors):
-    result = pd.read_csv(logger.log_path)
-    if not result.empty:
-        result['flavor'] = result['model_name'].apply(lambda model_name: model_name.split('_')[1])
-        result = result[result['timepoint'] == result['num_saves']]
-        result = result[result['flavor'].isin(summary_flavors)]
-    return result

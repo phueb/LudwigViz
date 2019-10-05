@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+
+{% block ludwigviztop %}
+    <div class="mdl-card__title needs-any">
+        <h3 class="mdl-card__title-text">Testing</h3>
+    </div>
+
+{% endblock %}
+
+{% block ludwigvizmiddle %}
+    {% if project_names %}
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">Logged Models:</h3>
+    </div>
+    <div class="containstable">
+        <table class="mdl-data-table mdl-js-data-table">
+            <thead>
+            <tr>
+                {% for table_header in table_headers %}
+                    <th class="mdl-data-table__cell--non-numeric">{{ table_header }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for project_name in project_names %}
+                <tr class="clickable" data-href='{{ url_for('project', project_name=project_name) }}'>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select"
+                               for="group_id{{ grouploop.index0 }}">
+                            <input type="checkbox" id="group_id{{ grouploop.index0 }}"
+                                   class="mdl-checkbox__input"
+                                   name="log_dict_id" value="{{ grouploop.index0 }}" form="form-group_action">
+                            <span class="mdl-checkbox__label">{{ grouploop.index0 }}</span>
+                        </label>
+                    </td>
+                    {% for cell in row %}
+                        <td class="mdl-data-table__cell--non-numeric">{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">No projects found</h3>
+    </div>
+    {% endif %}
+
+    <script type='text/javascript'>
+    $(document).ready(function() {
+        $("td input").click(function (e) {
+            e.stopPropagation();
+        });
+        $(".clickable").click(function (e) {
+            if (e.target.tagName !== 'SPAN') {
+                window.location = $(this).data("href");
+            }
+        });
+    });
+    </script>
+{% endblock %}
+
+{% block ludwigvizbottom %}
+    <form action="{{ url_for('log_group_action') }}" id="form-group_action"></form>
+
+
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">Something</h3>
+    </div>
+    <div class="mdl-card__supporting-text">
+        Something again
+    </div>
+    <div class="mdl-card__actions mdl-card--border"></div>
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">Something totally new</h3>
+    </div>
+
+
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            $('.needs-2').css('color', 'lightgrey');
+            $('.needs-any').css('color', 'lightgrey');
+            $('input[type="checkbox"]').click(function(e){
+                var num_checkboxes_clicked = $("input[name='" + $(this).attr('name') + "']:checked").length;
+                $.ajax({
+                    url: '{{ url_for("which_hidden_btns") }}',
+                    data: {num_checkboxes_clicked: num_checkboxes_clicked},
+                    success: function(result){
+                        if (result === 'both') {
+                            $('.needs-2').css('color', '');
+                            $('.needs-any').css('color', '');
+                        }
+                        else if (result === 'any') {
+                            $('.needs-2').css('color', 'lightgrey');
+                            $('.needs-any').css('color', '');
+                        }
+                        else if (result === 'none') {
+                            $('.needs-2').css('color', 'lightgrey');
+                            $('.needs-any').css('color', 'lightgrey');
+                        }
+                    }
+                });
+
+
+            });
+        });
+    </script>
+{% endblock %}
+
+

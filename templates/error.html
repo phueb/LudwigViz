@@ -1,26 +1,26 @@
 {% extends "layout.html" %}
 
-{% block rnnlabtop %}
+{% block ludwigviztop %}
     <div class="mdl-card__title">
         <h3 class="mdl-card__title-text">Error {{ status_code }}</h3>
     </div>
     <div class="mdl-card__supporting-text">
-        <p><span style="color:red">{{ exception.message }}<span style="color:red"></p>
+        <p><span style="color:red">{{ exception.message }}</span></p>
     </div>
 {% endblock %}
 
-{% block rnnlabmiddle %}
+{% block ludwigvizmiddle %}
     <script type='text/javascript'>
         $(document).ready(function () {
-            $('.rnnlab-middle').hide();
+            $('.ludwigviz-middle').hide();
         });
     </script>
 {% endblock %}
 
-{% block rnnlabbottom %}
+{% block ludwigvizbottom %}
     <script type='text/javascript'>
         $(document).ready(function () {
-            $('.rnnlab-bottom').hide();
+            $('.ludwigviz-bottom').hide();
         });
     </script>
 {% endblock %}

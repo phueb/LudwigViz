@@ -23,9 +23,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-<div class="rnnlab-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+<div class="ludwigviz-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
     <header class="mdl-layout__header">
-        <a href="{{url_for('log')}}">
+        <a href="{{url_for('home')}}">
             <div class="mdl-layout__header-row">
                 <h3 id="title">Rnnlab</h3>
                 <div class="mdl-layout-spacer"></div>
@@ -36,15 +36,15 @@
         </a>
     </header>
     <main class="mdl-layout__content">
-        <div class="rnnlab-top mdl-shadow--2dp mdl-color--white mdl-cell--8-col">
-                {% block rnnlabtop %}{% endblock %}
+        <div class="ludwigviz-top mdl-shadow--2dp mdl-color--white mdl-cell--8-col">
+                {% block ludwigviztop %}{% endblock %}
             </div>
-        <div class="rnnlab-middle mdl-shadow--2dp mdl-color--white mdl-cell--8-col">
-                {% block rnnlabmiddle %}{% endblock %}
+        <div class="ludwigviz-middle mdl-shadow--2dp mdl-color--white mdl-cell--8-col">
+                {% block ludwigvizmiddle %}{% endblock %}
             </div>
 
-        <div class="rnnlab-bottom mdl-shadow--2dp mdl-color--white mdl-cell--8-col">
-                {% block rnnlabbottom %}{% endblock %}
+        <div class="ludwigviz-bottom mdl-shadow--2dp mdl-color--white mdl-cell--8-col">
+                {% block ludwigvizbottom %}{% endblock %}
             </div>
     </main>
 </div>

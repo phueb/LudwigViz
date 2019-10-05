@@ -1,0 +1,4 @@
+https://github.com/phueb/CHILDESHub/archive/v1.0.0.tar.gz
+flask
+pandas
+wtforms

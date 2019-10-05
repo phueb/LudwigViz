@@ -7,7 +7,7 @@ a {
     text-decoration: None;
 }
 
-.rnnlab-layout {
+.ludwigviz-layout {
     background-color: #f3f3f3;
 }
 
@@ -21,26 +21,26 @@ a {
     color: white;
 }
 
-.rnnlab-top, .rnnlab-middle, .rnnlab-bottom {
+.ludwigviz-top, .ludwigviz-middle, .ludwigviz-bottom {
     margin: 10px auto;
     min-width: 768px;
 }
 
-.rnnlab-middle {
+.ludwigviz-middle {
     padding-bottom: 10px;
 }
 
-.rnnlab-top-text-float {
+.ludwigviz-top-text-float {
     width: 300px;
     display: inline-grid;
 }
 
-.rnnlab-top-btn-float {
+.ludwigviz-top-btn-float {
     display: inline-grid;
     margin-right: 140px;
 }
 
-.rnnlab-img {
+.ludwigviz-img {
     display:block;
 }
 
