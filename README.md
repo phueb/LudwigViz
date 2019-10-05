@@ -1,7 +1,7 @@
 # LudwigViz
 
 
-A browser interface for (LudwigCluster)[https://github.com/phueb/LudwigCluster]
+A browser interface for [LudwigCluster](https://github.com/phueb/LudwigCluster).
 
 ## Features
 
