@@ -4,10 +4,10 @@ import numpy as np
 from wtforms.validators import ValidationError
 from wtforms import Form, StringField
 
-from ludwiglab import hostname
+from ludwigviz import hostname
 
 
-class RnnlabEmptySubmission(Exception):
+class LudwigVizEmptySubmission(Exception):
     def __init__(self, key, status_code=500):
         Exception.__init__(self)
         self.message = 'rnnlab: Did not find "{}" in session and no default provided.'.format(key)
@@ -15,7 +15,7 @@ class RnnlabEmptySubmission(Exception):
             self.status_code = status_code
 
 
-class RnnlabAppError(Exception):
+class LudwigVizAppError(Exception):
     def __init__(self, message, status_code=500):
         Exception.__init__(self)
         self.message = 'rnnlab: {}'.format(message)
@@ -68,7 +68,7 @@ def make_requested(request, session, key, default=None, verbose=True):
             print('requested new "{}": {}'.format(key, result)) if verbose else None
         else:  # might be None or [] if only submit button clicked
             print('no new "{}" found'.format(key))
-            raise RnnlabEmptySubmission(key)
+            raise LudwigVizEmptySubmission(key)
     elif get_fn(key + '-default'):
         result = session[key] = default
         print('requested default "{}": {}'.format(key, result)) if verbose else None
@@ -83,7 +83,7 @@ def make_requested(request, session, key, default=None, verbose=True):
                 print('fallback to default "{}": {}'.format(key, result)) if verbose else None
             else:
                 print('no fallback found for "{}"'.format(key))
-                raise RnnlabEmptySubmission(key)
+                raise LudwigVizEmptySubmission(key)
     return result
 
 

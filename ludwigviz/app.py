@@ -7,46 +7,32 @@ import argparse
 from itertools import chain
 import pandas as pd
 
-from ludwiglab.io_utils import write_pca_loadings_files
-from ludwiglab.io_utils import save_probes_fs_mat
-from ludwiglab.io_utils import write_probe_neighbors_files
-from ludwiglab.io_utils import write_acts_tsv_file
 
-from ludwiglab.log_utils import get_config_values_from_log
-from ludwiglab.log_utils import get_requested_log_dicts
-from ludwiglab.log_utils import make_log_dicts
-from ludwiglab.log_utils import make_common_timepoint
-from ludwiglab.log_utils import make_log_df
+from ludwigviz.log_utils import get_config_values_from_log
+from ludwigviz.log_utils import get_requested_log_dicts
+from ludwigviz.log_utils import make_log_dicts
+from ludwigviz.log_utils import make_common_timepoint
+from ludwigviz.log_utils import make_log_df
 
-from ludwiglab.app_utils import make_form
-from ludwiglab.app_utils import figs_to_imgs
-from ludwiglab.app_utils import generate_terms
-from ludwiglab.app_utils import get_log_dicts_values
-from ludwiglab.app_utils import make_model_btn_name_info_dict
-from ludwiglab.app_utils import make_requested
-from ludwiglab.app_utils import make_template_dict
-from ludwiglab.app_utils import load_configs_dict
-from ludwiglab.app_utils import RnnlabAppError
-from ludwiglab.app_utils import RnnlabEmptySubmission
-from ludwiglab.model_figs import model_btn_name_figs_fn_dict
-from ludwiglab.group_figs import group_btn_name_figs_fn_dict
-from ludwiglab.model import Model
-from ludwiglab import config
+from ludwigviz.app_utils import make_form
+from ludwigviz.app_utils import figs_to_imgs
+from ludwigviz.app_utils import generate_terms
+from ludwigviz.app_utils import get_log_dicts_values
+from ludwigviz.app_utils import make_model_btn_name_info_dict
+from ludwigviz.app_utils import make_requested
+from ludwigviz.app_utils import make_template_dict
+from ludwigviz.app_utils import load_configs_dict
+from ludwigviz.app_utils import LudwigVizAppError
+from ludwigviz.app_utils import LudwigVizEmptySubmission
 
-from ludwigcluster.logger import Logger
-from chjildeshub.hub import Hub
+from ludwigviz import config
 
 
-# TODO i don't think this can be converted into a general-purpose neural network interface - there are too many rnn-specific things
-# TODO -> merge this with rnnlab or call this rnnlab
-# TODO or get rid of all rnn specific things and put those into the starting_small code (or different code, or delete?)
 
 
-# TODO make configs_dict into someother data structure that is forward + reverse compatible+ user can add and remove any entries
 
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-logger = Logger()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -161,7 +147,7 @@ def log_group_action():
         num_allowed = 2
     # checks
     if num_allowed is not None and num_allowed != len(model_groups):
-        raise RnnlabAppError('Action allows only {} groups.'.format(
+        raise LudwigVizAppError('Action allows only {} groups.'.format(
             'more than 0' if num_allowed is None else num_allowed))
     for config_name in check_config_names:
         config_values = [model.configs_dict[config_name] for models in model_groups for model in models]
@@ -395,7 +381,7 @@ def export_pca_loadings(model_name):
     return redirect(url_for('btns', model_name=model_name))
 
 
-@app.errorhandler(RnnlabEmptySubmission)  # custom exception
+@app.errorhandler(LudwigVizEmptySubmission)  # custom exception
 def handle_empty_submission(error):
     return render_template('error.html',
                            exception=error,
@@ -403,7 +389,7 @@ def handle_empty_submission(error):
                            template_dict=make_template_dict(session))
 
 
-@app.errorhandler(RnnlabAppError)  # custom exception
+@app.errorhandler(LudwigVizAppError)  # custom exception
 def handle_empty_submission(error):
     return render_template('error.html',
                            exception=error,

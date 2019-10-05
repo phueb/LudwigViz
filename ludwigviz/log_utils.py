@@ -1,8 +1,8 @@
 from itertools import chain
 import pandas as pd
 
-from ludwiglab import config
-from ludwiglab.app_utils import make_requested
+from ludwigviz import config
+from ludwigviz.app_utils import make_requested
 
 
 def get_config_values_from_log(logger, config_name, req_completion=True):
