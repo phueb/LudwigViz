@@ -1,21 +1,21 @@
 {% extends "layout.html" %}
 
-{% block ludwigviztop %}
+{% block ludwigviz_top %}
 {% endblock %}
 
-{% block ludwigvizmiddle %}
+{% block ludwigviz_middle %}
     {% if rows %}
     <div class="mdl-card__title">
         <h3 class="mdl-card__title-text">Projects:</h3>
     </div>
-    <div class="containstable">
+    <div class="contains-table">
         <table class="mdl-data-table mdl-js-data-table">
             <thead>
-            <tr>
-                {% for header in headers %}
-                    <th class="mdl-data-table__cell--non-numeric">{{ header }}</th>
-                {% endfor %}
-            </tr>
+                <tr>
+                    {% for header in headers %}
+                        <th class="mdl-data-table__cell--non-numeric">{{ header }}</th>
+                    {% endfor %}
+                </tr>
             </thead>
             <tbody>
             {% for row in rows %}
@@ -48,7 +48,7 @@
     </script>
 {% endblock %}
 
-{% block ludwigvizbottom %}
+{% block ludwigviz_bottom %}
 {% endblock %}
 
 

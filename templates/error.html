@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block ludwigviztop %}
+{% block ludwigviz_top %}
     <div class="mdl-card__title">
         <h3 class="mdl-card__title-text">Error {{ status_code }}</h3>
     </div>
@@ -9,18 +9,18 @@
     </div>
 {% endblock %}
 
-{% block ludwigvizmiddle %}
+{% block ludwigviz_middle %}
     <script type='text/javascript'>
         $(document).ready(function () {
-            $('.ludwigviz-middle').hide();
+            $('.ludwigviz_middle').hide();
         });
     </script>
 {% endblock %}
 
-{% block ludwigvizbottom %}
+{% block ludwigviz_bottom %}
     <script type='text/javascript'>
         $(document).ready(function () {
-            $('.ludwigviz-bottom').hide();
+            $('.ludwigviz_bottom').hide();
         });
     </script>
 {% endblock %}

@@ -4,7 +4,7 @@ from flask import request
 import argparse
 import socket
 
-from ludwigviz.io import make_project_rows
+from ludwigviz.io import make_runs_headers_and_rows
 from ludwigviz.io import get_project_headers_and_rows
 
 from ludwigviz.app_utils import figs_to_imgs
@@ -19,7 +19,8 @@ hostname = socket.gethostname()
 topbar_dict = {'listing': config.RemoteDirs.research_data,
                'hostname': hostname,
                'version': __version__,
-               'title': __package__.capitalize()}
+               'title': __package__.capitalize()
+               }
 
 app = Flask(__name__)
 
@@ -34,31 +35,32 @@ def home():
                            headers=headers)
 
 
-@app.route('/project/<string:project_name>', methods=['GET', 'POST'])
+@app.route('/<string:project_name>', methods=['GET', 'POST'])
 def project(project_name):
-    rows = make_project_rows(project_name)
-    table_headers = ['Parameter ID', 'Worker', 'Time Stamp', 'Replications']
+    headers, rows = make_runs_headers_and_rows(project_name)
 
-    # TODO
-    param_names = ['param1', 'param2']
+    # sort
+    header = request.args.get('header') or config.Default.header
+    order = request.args.get('order') or config.Default.order
+    rows = sorted(rows, key=lambda d: d[header],
+                  reverse=True if order == 'descending' else False)
 
     return render_template('project.html',
                            topbar_dict=topbar_dict,
                            project_name=project_name,
                            rows=rows,
-                           table_headers=table_headers,
-                           param_names=param_names)
+                           headers=headers)
 
 
 @app.route('/<string:project_name>/<param_name>/', methods=['GET', 'POST'])
-def imgs(project_name, param_name):
-    images = figs_to_imgs(*figs)
+def images(project_name, param_name):
+    imgs = figs_to_imgs(*figs)
     return render_template('imgs.html',
                            topbar_dict=topbar_dict,
                            project_name=project_name,
                            param_name=param_name,
                            num_reps=len(job_names),
-                           imgs=images)
+                           imgs=imgs)
 
 
 @app.route('/which_hidden_btns/', methods=['GET'])
@@ -77,7 +79,7 @@ def which_hidden_btns():
 
 
 @app.route('/log_group_action/', methods=['GET', 'POST'])
-def log_group_action():
+def group_action():
     if request.args.get('delete_many') is not None:
         return redirect(url_for('delete_many', log_dict_id=request.args.getlist('log_dict_id')))
 

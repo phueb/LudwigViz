@@ -1,70 +1,37 @@
 {% extends "layout.html" %}
 
-{% block ludwigviztop %}
-    <div class="mdl-card__title needs-any">
-        <h3 class="mdl-card__title-text">Multi Group Actions:</h3>
-    </div>
-    <div class="mdl-grid needs-any">
-        {% for multi_group_btn_name in multi_group_btn_names %}
-            <div class="mdl-cell mdl-cell--4-col">
-                <input type="submit" name="group_btn_name" value="{{ multi_group_btn_name }}" class="mdl-button" form="form-group_action">
-            </div>
-        {% endfor %}
-        <div class="mdl-cell mdl-cell--4-col">
-            <input type="submit" name="delete_many" class="mdl-button" value="Delete" form="form-group_action">
-        </div>
-    </div>
-    <div class="mdl-card__title needs-2">
-        <h3 class="mdl-card__title-text">2 Group Actions:</h3>
-    </div>
-    <div class="mdl-grid needs-2">
-        {% for two_group_btn_name in two_group_btn_names %}
-            <div class="mdl-cell mdl-cell--4-col">
-                <input type="submit" name="group_btn_name" value="{{ two_group_btn_name }}" class="mdl-button" form="form-group_action">
-            </div>
-        {% endfor %}
-    </div>
-    <div class="mdl-card__title">
-        <h3 class="mdl-card__title-text">Global Actions:</h3>
-    </div>
-    <div class="mdl-grid">
-        <div class="mdl-cell mdl-cell--4-col">
-            <input type="submit" name="delete_all" class="mdl-button" value="Delete All" form="form-global_action">
-        </div>
-        <div class="mdl-cell mdl-cell--4-col">
-            <input type="submit" name="summarize_all" class="mdl-button" value="Summarize All" form="form-global_action">
-        </div>
-    </div>
-{% endblock %}
-
-{% block ludwigvizmiddle %}
+{% block ludwigviz_top %}
     {% if rows %}
     <div class="mdl-card__title">
-        <h3 class="mdl-card__title-text">Configurations:</h3>
+        <h3 class="mdl-card__title-text">Runs:</h3>
     </div>
-    <div class="containstable">
+    <div class="contains-table">
         <table class="mdl-data-table mdl-js-data-table">
             <thead>
             <tr>
-                {% for table_header in table_headers %}
-                    <th class="mdl-data-table__cell--non-numeric">{{ table_header }}</th>
+                {% for header in headers %}
+                    <th class="mdl-data-table__cell--non-numeric">{{ header }}</th>
                 {% endfor %}
             </tr>
             </thead>
             <tbody>
             {% for row in rows %}
-                <tr class="clickable" data-href='{{ url_for('imgs', project_name=project_name, param_name=param_name) }}'>
+                <tr class="clickable" data-href='{{ url_for('images', project_name=project_name, param_name=row.param_name) }}'>
                     <td class="mdl-data-table__cell--non-numeric">
-                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select"
-                               for="row_id{{ loop.index0 }}">
-                            <input type="checkbox" id="row_id{{ loop.index0 }}"
+                        <label for="row_id{{ loop.index0 }}" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select">
+                            <input type="checkbox"
+                                   name="log_dict_id"
+                                   id="row_id{{ loop.index0 }}"
                                    class="mdl-checkbox__input"
-                                   name="log_dict_id" value="{{ loop.index0 }}" form="form-group_action">
-                            <span class="mdl-checkbox__label">{{ loop.index0 }}</span>
+                                   value="{{ loop.index0 }}"
+                                   form="form-group_action">
+                            <span class="mdl-checkbox__label">{{ row.Param }}</span>
                         </label>
                     </td>
-                    {% for d in data_row %}
-                        <td class="mdl-data-table__cell--non-numeric">{{ d }}</td>
+                    {% for k in headers %}
+                        {%  if k != 'Param' %}
+                            <td class="mdl-data-table__cell--non-numeric">{{ row[k] }}</td>
+                        {% endif %}
                     {% endfor %}
                 </tr>
             {% endfor %}
@@ -91,41 +58,71 @@
     </script>
 {% endblock %}
 
-{% block ludwigvizbottom %}
-    <form action="{{ url_for('project', project_name=project_name) }}" id="form-group"></form>
-    <form action="{{ url_for('log_group_action') }}" id="form-group_action"></form>
-    <div class="mdl-card__title">
-        <h3 class="mdl-card__title-text">Group models by:</h3>
+{% block ludwigviz_middle %}
+    <form action="{{ url_for('group_action') }}" id="form-group_action"></form>
+
+    <div class="mdl-card__title needs-any">
+        <h3 class="mdl-card__title-text">Multi Group Actions:</h3>
     </div>
-    <div class="mdl-card__supporting-text">
-        {% for param_name in param_names %}
-        <label for="group-chkbox{{ loop.index0 }}" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-            <input type="checkbox" name="config_names" id="group-chkbox{{ loop.index0 }}"
-                   class="mdl-checkbox__input" value="{{ param_name }}" form="form-group">
-            <span class="mdl-checkbox__label">{{ param_name }}</span>
-        </label>
+    <div class="mdl-grid needs-any">
+        {% for multi_group_btn_name in multi_group_btn_names %}
+            <div class="mdl-cell mdl-cell--4-col">
+                <input type="submit" name="group_btn_name" value="{{ multi_group_btn_name }}" class="mdl-button" form="form-group_action">
+            </div>
         {% endfor %}
-        <input type="submit" name="config_names-new" class="mdl-button" value="Group" form="form-group">
-        <input type="submit" name="config_names-default" class="mdl-button" value="Default" form="form-group">
+        <div class="mdl-cell mdl-cell--4-col">
+            <input type="submit" name="delete_many" class="mdl-button" value="Delete" form="form-group_action">
+        </div>
     </div>
 
     <div class="mdl-card__actions mdl-card--border"></div>
-    <div class="mdl-card__title">
-        <h3 class="mdl-card__title-text">Just a template</h3>
+    <div class="mdl-card__title needs-2">
+        <h3 class="mdl-card__title-text">2 Group Actions:</h3>
     </div>
-    <form action="{{ url_for('project', project_name=project_name) }}">
-        <div class="mdl-card__supporting-text">
-            {% for text in ['a', 'b'] %}
-                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect inlineradio"
-                       for="hub_mode_id{{ loop.index0 }}">
-                    <input type="radio" id="hub_mode_id{{ loop.index0 }}" class="mdl-radio__button"
-                           name="hub_mode" value="{{ text }}">
-                    <span class="mdl-radio__label">{{ text }}</span>
-                </label>
-            {% endfor %}
-            <input type="submit" name="hub_mode-new" class="mdl-button" value="Update">
-        </div>
-    </form>
+    <div class="mdl-grid needs-2">
+        {% for two_group_btn_name in two_group_btn_names %}
+            <div class="mdl-cell mdl-cell--4-col">
+                <input type="submit" name="group_btn_name" value="{{ two_group_btn_name }}" class="mdl-button" form="form-group_action">
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+
+
+
+
+{% block ludwigviz_bottom %}
+    <form action="{{ url_for('project', project_name=project_name) }}" id="form-group"></form>
+
+    <div class="mdl-card__supporting-text">
+        {% for header in headers %}
+            <label for="header_id{{ loop.index0 }}" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                <input type="checkbox"
+                       name="header"
+                       id="header_id{{ loop.index0 }}"
+                       class="mdl-checkbox__input"
+                       value="{{ header }}" form="form-group">
+                <span class="mdl-checkbox__label">{{ header }}</span>
+            </label>
+        {% endfor %}
+
+        {% for order in ['ascending', 'descending'] %}
+            <label for="order_id{{ loop.index0 }}" class="mdl-radio mdl-js-radio mdl-js-ripple-effect inline-radio">
+                <input type="radio"
+                       name="order"
+                       id="order_id{{ loop.index0 }}"
+                       class="mdl-radio__button"
+                       value="{{ order }}" form="form-group">
+                <span class="mdl-radio__label">{{ order }}</span>
+            </label>
+        {% endfor %}
+
+    </div>
+
+    <div class="mdl-card__actions mdl-card--border">
+        <input type="submit" name="reorder" class="mdl-button" value="Re-order" form="form-group">
+    </div>
 
     <script type='text/javascript'>
         $(document).ready(function() {
@@ -157,5 +154,3 @@
         });
     </script>
 {% endblock %}
-
-

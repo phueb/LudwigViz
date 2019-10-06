@@ -1,7 +1,15 @@
-import pandas as pd
+import re
 import datetime
 
 from ludwigviz import config
+
+
+regex_workers = re.compile(r'(hoff|hebb)')  # TODO use SFTP.worker_names
+regex_digit = re.compile(r'[0-9]+')
+
+
+def get_time_modified(p):
+    return datetime.datetime.fromtimestamp(p.lstat().st_mtime).strftime('%H:%M:%S %B %d, %Y')
 
 
 def get_project_headers_and_rows():
@@ -12,10 +20,40 @@ def get_project_headers_and_rows():
     for p in config.RemoteDirs.research_data.iterdir():
         if not p.name.startswith('.') and p.name not in config.Projects.excluded:
             row = {headers[0]: p.name,
-                   headers[1]: datetime.datetime.fromtimestamp(p.lstat().st_mtime).strftime('%B %d, %Y'),
+                   headers[1]: get_time_modified(p),
                    headers[2]: len(list(p.glob('runs/param*')))}
             rows.append(row)
 
+    return headers, rows
+
+
+def make_runs_headers_and_rows(project_name):
+    headers = ['Param', 'Time Stamp', 'Replications']
+    rows = []
+    for p in (config.RemoteDirs.research_data / project_name / 'runs').glob('param*'):
+        row = {headers[0]: regex_digit.search(p.name).group(),
+               headers[1]: get_time_modified(p),
+               headers[2]: len(list(p.glob('*'))),
+               }
+        rows.append(row)
+    return headers, rows
+
+
+def make_param_rows(project_name):
+
+    headers = ['Worker', 'Time Stamp', 'Replications']
+    rows = []
+    for p in (config.RemoteDirs.research_data / project_name / 'runs').glob('param*'):
+
+        # TODO implement
+        print(regex_workers.search(p.name))
+
+        row = {'param_name': p.name,
+               headers[0]: regex_workers.search(p.name).group(),
+               headers[1]: get_time_modified(p),
+               headers[2]: p.name,
+               }
+        rows.append(row)
     return headers, rows
 
 
@@ -37,13 +75,6 @@ def get_config_values_from_log(logger, config_name, req_completion=True):
     return result
 
 
-def get_timepoints(logger, model_name):
-    last_timepoint = [d['timepoint'] for d in logger.load_log()
-                      if d['model_name'] == model_name][0]
-    result = list(range(last_timepoint + 1))
-    return result
-
-
 def get_manipulated_config_names(logger):
     """
     Returns list of all config_names for which there is more than one unique value in all logs
@@ -60,10 +91,3 @@ def get_manipulated_config_names(logger):
     return result
 
 
-def make_project_rows(project_name):
-    res = []
-    for p in (config.RemoteDirs.research_data / project_name / 'runs').glob('param*'):
-        row = {'param1': p.name,
-               'param2': p.name}
-        res.append(row)
-    return res

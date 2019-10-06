@@ -5,7 +5,11 @@ A browser interface for [Ludwig](https://github.com/phueb/Ludwig), a job submiss
 
 ## Features
 
-* View projects submitted to Ludwig
-* View status of job queue
-* Visualize data frame associated with a completed job
+* View jobs submitted to Ludwig
+* Visualize data frame associated with jobs
   * e.g. plot performance of neural network over time
+
+
+# TODO
+
+* use alt-air Python plotting library

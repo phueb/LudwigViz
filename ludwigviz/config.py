@@ -27,8 +27,8 @@ class LocalDirs:
 
 
 class Default:
-    field_input = 'default word'
-    valid_type = 'term'
+    header = 'Param'
+    order = 'ascending'
 
 
 class Projects:

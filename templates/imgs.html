@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block ludwigviztop %}
+{% block ludwigviz_top %}
     <a href="{{ url_for('param_name', param_name=param_name) }}">
         <div class="mdl-card__title">
             <h3 class="mdl-card__title-text">
@@ -17,16 +17,16 @@
     </div>
 {% endblock %}
 
-{% block ludwigvizmiddle %}
+{% block ludwigviz_middle %}
     {% for img in imgs %}
         <img src="data:image/png;base64,{{ img }}" class="ludwigviz-img">
     {% endfor %}
 {% endblock %}
 
-{% block ludwigvizbottom %}
+{% block ludwigviz_bottom %}
     <script type='text/javascript'>
         $(document).ready(function () {
-            $('.ludwigviz-bottom').hide();
+            $('.ludwigviz_bottom').hide();
         });
     </script>
 {% endblock %}
