@@ -34,6 +34,7 @@ def make_runs_headers_and_rows(project_name):
         row = {headers[0]: regex_digit.search(p.name).group(),
                headers[1]: get_time_modified(p),
                headers[2]: len(list(p.glob('*'))),
+               'param_name': p.name,
                }
         rows.append(row)
     return headers, rows

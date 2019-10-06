@@ -13,3 +13,4 @@ A browser interface for [Ludwig](https://github.com/phueb/Ludwig), a job submiss
 # TODO
 
 * use alt-air Python plotting library
+* sort runs by time instead of chronologically when sorting by Time Stamp
