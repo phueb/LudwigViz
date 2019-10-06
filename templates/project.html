@@ -1,60 +1,71 @@
 {% extends "layout.html" %}
 
 {% block ludwigviz_top %}
-    {% if rows %}
     <div class="mdl-card__title">
         <h3 class="mdl-card__title-text">{{ project_name }}</h3>
+
     </div>
-    <div class="contains-table">
-        <table class="mdl-data-table mdl-js-data-table">
-            <thead>
-            <tr>
-                {% for header in headers %}
-                    <th class="mdl-data-table__cell--non-numeric">{{ header }}</th>
-                {% endfor %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for row in rows %}
-                <tr class="clickable" data-href='{{ url_for('images', project_name=project_name, param_name=row.param_name) }}'>
-                    <td class="mdl-data-table__cell--non-numeric">
-                        <label for="row_id{{ loop.index0 }}" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select">
-                            <input type="checkbox"
-                                   name="log_dict_id"
-                                   id="row_id{{ loop.index0 }}"
-                                   class="mdl-checkbox__input"
-                                   value="{{ loop.index0 }}"
-                                   form="form-group_action">
-                            <span class="mdl-checkbox__label">{{ row.Param }}</span>
-                        </label>
-                    </td>
-                    {% for k in headers %}
-                        {%  if k != 'Param' %}
-                            <td class="mdl-data-table__cell--non-numeric">{{ row[k] }}</td>
-                        {% endif %}
+    <div class="mdl-card__supporting-text">
+        All unique runs are listed below. Each may may contain more than 1 job.
+    </div>
+    <div class="mdl-card__actions mdl-card--border">
+        <a href="{{ url_for('project', project_name=project_name) }}"
+           class="mdl-button">Re-load</a>
+        <a href="{{ url_for('home') }}"
+           class="mdl-button">Back</a>
+    </div>
+
+    {% if rows %}
+        <div class="contains-table">
+            <table class="mdl-data-table mdl-js-data-table">
+                <thead>
+                <tr>
+                    {% for header in headers %}
+                        <th class="mdl-data-table__cell--non-numeric">{{ header }}</th>
                     {% endfor %}
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                {% for row in rows %}
+                    <tr class="clickable" data-href='{{ url_for('images', project_name=project_name, param_name=row.param_name) }}'>
+                        <td class="mdl-data-table__cell--non-numeric">
+                            <label for="row_id{{ loop.index0 }}" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select">
+                                <input type="checkbox"
+                                       name="log_dict_id"
+                                       id="row_id{{ loop.index0 }}"
+                                       class="mdl-checkbox__input"
+                                       value="{{ loop.index0 }}"
+                                       form="form-group_action">
+                                <span class="mdl-checkbox__label">{{ row.Param }}</span>
+                            </label>
+                        </td>
+                        {% for k in headers %}
+                            {%  if k != 'Param' %}
+                                <td class="mdl-data-table__cell--non-numeric">{{ row[k] }}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-    <div class="mdl-card__title">
-        <h3 class="mdl-card__title-text">No models logged</h3>
-    </div>
+        <div class="mdl-card__title">
+            <h3 class="mdl-card__title-text">No models logged</h3>
+        </div>
     {% endif %}
 
     <script type='text/javascript'>
-    $(document).ready(function() {
-        $("td input").click(function (e) {
-            e.stopPropagation();
+        $(document).ready(function() {
+            $("td input").click(function (e) {
+                e.stopPropagation();
+            });
+            $(".clickable").click(function (e) {
+                if (e.target.tagName !== 'SPAN') {
+                    window.location = $(this).data("href");
+                }
+            });
         });
-        $(".clickable").click(function (e) {
-            if (e.target.tagName !== 'SPAN') {
-                window.location = $(this).data("href");
-            }
-        });
-    });
     </script>
 {% endblock %}
 

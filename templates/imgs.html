@@ -1,19 +1,23 @@
 {% extends "layout.html" %}
 
 {% block ludwigviz_top %}
-    <a href="{{ url_for('images', project_name=project_name, param_name=param_name) }}">
-        <div class="mdl-card__title">
-            <h3 class="mdl-card__title-text">
-                <b>{{ project_name }}</b> | Param={{ param_id }} | n={{ num_reps }}
-            </h3>
-        </div>
-    </a>
+
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">{{ project_name }}</h3>
+
+    </div>
     <div class="mdl-card__supporting-text">
+        Param={{ param_id }} | n={{ num_reps }}
+    </div>
+    <div class="mdl-card__actions mdl-card--border">
         <a href="{{ url_for('images', project_name=project_name, param_name=param_name) }}"
            class="mdl-button">Re-load</a>
         <a href="{{ url_for('project', project_name=project_name) }}"
            class="mdl-button">Back</a>
     </div>
+
+
+
 {% endblock %}
 
 {% block ludwigviz_middle %}
