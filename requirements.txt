@@ -3,4 +3,3 @@ flask
 pandas
 wtforms
 altair
-selenium
