@@ -64,6 +64,9 @@ def images(project_name, param_name):
     param_p = config.RemoteDirs.research_data / project_name / 'runs' / param_name
     df_file_names = [p.name for p in param_p.rglob('*.csv')]
 
+    if not df_file_names:
+        raise LudwigVizNoCsvFound(param_p)
+
     # iterate over unique df file names
     json_charts = []
     for pattern in set(df_file_names):
@@ -95,7 +98,6 @@ def images(project_name, param_name):
             json_charts.append(json_chart)
 
     num_reps = len(df_file_names) // len(set(df_file_names))
-
     return render_template('imgs.html',
                            topbar_dict=topbar_dict,
                            project_name=project_name,
@@ -143,10 +145,25 @@ def delete_many():
 
 # -------------------------------------------- error handling
 
+class LudwigVizNoCsvFound(Exception):
+    def __init__(self, param_p, status_code=500):
+        Exception.__init__(self)
+        self.message = 'LudwigViz: Did not find any csv files in {}'.format(param_p)
+        if status_code is not None:
+            self.status_code = status_code
+
+
+@app.errorhandler(LudwigVizNoCsvFound)
+def handle_not_found_error(exception):
+    return render_template('error.html',
+                           message=exception.message,
+                           status_code=500,
+                           topbar_dict=topbar_dict)
+
 @app.errorhandler(500)
 def handle_app_error(exception):
     return render_template('error.html',
-                           exception=exception,
+                           message=exception,
                            status_code=500,
                            topbar_dict=topbar_dict)
 
@@ -154,7 +171,7 @@ def handle_app_error(exception):
 @app.errorhandler(404)
 def page_not_found(exception):
     return render_template('error.html',
-                           exception=exception,
+                           message=exception,
                            status_code=404,
                            topbar_dict=topbar_dict)
 
