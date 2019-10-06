@@ -2,13 +2,15 @@ from flask import Flask, redirect, url_for
 from flask import render_template
 from flask import request
 import argparse
+import json
 import socket
+import altair as alt
+import pandas as pd
 
 from ludwigviz.io import make_runs_headers_and_rows
+from ludwigviz.io import to_param_id
 from ludwigviz.io import get_project_headers_and_rows
 
-from ludwigviz.app_utils import figs_to_imgs
-from ludwigviz.app_utils import LudwigVizEmptySubmission
 
 from ludwigviz import config
 from ludwigviz import __version__
@@ -54,13 +56,45 @@ def project(project_name):
 
 @app.route('/<string:project_name>/<param_name>/', methods=['GET', 'POST'])
 def images(project_name, param_name):
-    imgs = figs_to_imgs(*figs)
+
+    # TODO there are multiple different csv files in each job_dir
+    # TODO each df can have multiple different columns
+    pattern = 'results_a.csv'  # TODO how to load only csv files with same name?
+
+    # concatenate all results
+    param_p = config.RemoteDirs.research_data / project_name / 'runs' / param_name
+    dfs = [pd.read_csv(p, index_col=0) for p in param_p.rglob(pattern)]
+
+    # average columns with the same name
+    concatenated_df = pd.concat(dfs, axis=1)
+    df = concatenated_df.groupby(by=concatenated_df.columns, axis=1).mean()
+    df['x'] = df.index
+
+    # iterate over column names, making a chart for each
+    json_charts = []
+    for column_name in df.columns:
+        if column_name == 'x':
+            continue
+        # make interactive chart and convert to json object
+        chart = alt.Chart(df).mark_line().encode(
+            x='x',
+            y=str(column_name),
+        ).interactive()
+        json_str = chart.to_json()
+        json_chart = json.loads(json_str)
+        json_chart['config']['view']['height'] *= config.Chart.scale_factor
+        json_chart['config']['view']['width'] *= config.Chart.scale_factor
+        # collect chart
+        json_charts.append(json_chart)
+
     return render_template('imgs.html',
                            topbar_dict=topbar_dict,
                            project_name=project_name,
                            param_name=param_name,
-                           num_reps=len(job_names),
-                           imgs=imgs)
+                           param_id=to_param_id(param_name),
+                           num_reps=len(dfs),
+                           json_charts=json_charts,
+                           )
 
 
 @app.route('/which_hidden_btns/', methods=['GET'])
@@ -100,14 +134,6 @@ def delete_many():
 
 # -------------------------------------------- error handling
 
-@app.errorhandler(LudwigVizEmptySubmission)  # custom exception
-def handle_empty_submission(exception):
-    return render_template('error.html',
-                           exception=exception,
-                           status_code=exception.status_code,
-                           topbar_dict=topbar_dict)
-
-
 @app.errorhandler(500)
 def handle_app_error(exception):
     return render_template('error.html',
@@ -116,12 +142,12 @@ def handle_app_error(exception):
                            topbar_dict=topbar_dict)
 
 
-# @app.errorhandler(404)
-# def page_not_found(exception):
-#     return render_template('error.html',
-#                            exception=exception,
-#                            status_code=404,
-#                            topbar_dict=topbar_dict)
+@app.errorhandler(404)
+def page_not_found(exception):
+    return render_template('error.html',
+                           exception=exception,
+                           status_code=404,
+                           topbar_dict=topbar_dict)
 
 
 # -------------------------------------------- start app from CL

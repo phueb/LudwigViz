@@ -8,6 +8,10 @@ regex_workers = re.compile(r'(hoff|hebb)')  # TODO use SFTP.worker_names
 regex_digit = re.compile(r'[0-9]+')
 
 
+def to_param_id(param_name):
+    return regex_digit.search(param_name).group()
+
+
 def get_time_modified(p):
     return datetime.datetime.fromtimestamp(p.lstat().st_mtime).strftime('%H:%M:%S %B %d, %Y')
 
@@ -31,7 +35,7 @@ def make_runs_headers_and_rows(project_name):
     headers = ['Param', 'Time Stamp', 'Replications']
     rows = []
     for p in (config.RemoteDirs.research_data / project_name / 'runs').glob('param*'):
-        row = {headers[0]: regex_digit.search(p.name).group(),
+        row = {headers[0]: to_param_id(p.name),
                headers[1]: get_time_modified(p),
                headers[2]: len(list(p.glob('*'))),
                'param_name': p.name,

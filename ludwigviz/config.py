@@ -33,3 +33,8 @@ class Default:
 
 class Projects:
     excluded = ['stdout', 'Example']
+
+
+class Chart:
+    x_name = 'x'
+    scale_factor = 1.4

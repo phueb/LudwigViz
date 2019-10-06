@@ -6,11 +6,16 @@ A browser interface for [Ludwig](https://github.com/phueb/Ludwig), a job submiss
 ## Features
 
 * View jobs submitted to Ludwig
-* Visualize data frame associated with jobs
-  * e.g. plot performance of neural network over time
+* Visualize job results - e.g. plot performance of neural network over time
 
+## Dependencies
 
-# TODO
+* flask - the web app framework
+* pandas - for representing and owrking with tabular data
+* [altair](https://altair-viz.github.io/user_guide/saving_charts.html) - a fantastic visualization API for python
 
-* use alt-air Python plotting library
+## TODO
+
 * sort runs by time instead of chronologically when sorting by Time Stamp
+
+ 

@@ -21,6 +21,26 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.deep_orange-orange.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+
+{#    TODO test embedding of alt-air plot#}
+    <style>
+    .vega-actions a {
+        margin-right: 12px;
+        color: #757575;
+        font-weight: normal;
+        font-size: 13px;
+    }
+    .error {
+        color: red;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@3.4.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@4"></script>
+
+
+
 </head>
 <body>
 <div class="ludwigviz-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">

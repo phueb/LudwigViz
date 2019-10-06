@@ -40,8 +40,9 @@ a {
     margin-right: 140px;
 }
 
-.ludwigviz-img {
+.altair-chart {
     display:block;
+    padding: 20px
 }
 
 table {

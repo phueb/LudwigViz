@@ -1,26 +1,45 @@
 {% extends "layout.html" %}
 
 {% block ludwigviz_top %}
-    <a href="{{ url_for('param_name', param_name=param_name) }}">
+    <a href="{{ url_for('images', project_name=project_name, param_name=param_name) }}">
         <div class="mdl-card__title">
             <h3 class="mdl-card__title-text">
-                {{ param_name }} | n={{ num_reps }}
+                <b>{{ project_name }}</b> | Param={{ param_id }} | n={{ num_reps }}
             </h3>
         </div>
     </a>
     <div class="mdl-card__supporting-text">
-        <a href="{{ url_for('delete_one', model_name=param_name) }}" class="mdl-button">delete</a>
-        <a href="{{ url_for('generate', model_name=param_name) }}" class="mdl-button">generate</a>
-        <a href="{{ url_for('export_neighbors', model_name=param_name) }}" class="mdl-button">export neighbors</a>
-        <a href="{{ url_for('export_acts', model_name=param_name) }}" class="mdl-button">export word vectors</a>
-        <a href="{{ url_for('export_pca_loadings', model_name=param_name) }}" class="mdl-button">export pca</a>
+        <a href="{{ url_for('images', project_name=project_name, param_name=param_name) }}"
+           class="mdl-button">Re-load</a>
+        <a href="{{ url_for('project', project_name=project_name) }}"
+           class="mdl-button">Back</a>
     </div>
 {% endblock %}
 
 {% block ludwigviz_middle %}
-    {% for img in imgs %}
-        <img src="data:image/png;base64,{{ img }}" class="ludwigviz-img">
+
+    {% for json_chart in json_charts %}
+        <div id="chart_id_{{ loop.index0 }}" class="altair-chart"></div>
+        <script type="text/javascript">
+            (function(vegaEmbed) {
+                var spec = {{ json_chart | tojson }};
+                var embedOpt = {"mode": "vega-lite"};
+
+                function showError(el, error){
+                    el.innerHTML = ('<div class="error" style="color:red;">'
+                        + '<p>JavaScript Error: ' + error.message + '</p>'
+                        + "<p>This usually means there's a typo in your chart specification. "
+                        + "See the javascript console for the full traceback.</p>"
+                        + '</div>');
+                    throw error;
+                }
+                const el = document.getElementById('chart_id_{{ loop.index0 }}');
+                vegaEmbed("#chart_id_{{ loop.index0 }}", spec, embedOpt)
+                    .catch(error => showError(el, error));
+            })(vegaEmbed);
+        </script>
     {% endfor %}
+
 {% endblock %}
 
 {% block ludwigviz_bottom %}
