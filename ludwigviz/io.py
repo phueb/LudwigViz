@@ -1,4 +1,22 @@
 import pandas as pd
+import datetime
+
+from ludwigviz import config
+
+
+def get_project_headers_and_rows():
+
+    headers = ['Name', 'Last modified', 'Number of unique runs']
+
+    rows = []
+    for p in config.RemoteDirs.research_data.iterdir():
+        if not p.name.startswith('.') and p.name not in config.Projects.excluded:
+            row = {headers[0]: p.name,
+                   headers[1]: datetime.datetime.fromtimestamp(p.lstat().st_mtime).strftime('%B %d, %Y'),
+                   headers[2]: len(list(p.glob('runs/param*')))}
+            rows.append(row)
+
+    return headers, rows
 
 
 def get_config_values_from_log(logger, config_name, req_completion=True):
@@ -42,32 +60,10 @@ def get_manipulated_config_names(logger):
     return result
 
 
-def get_requested_log_dicts(logger, session, request):
-    config_names = make_requested(request, session, 'config_names', default=logger.manipulated_config_names)
-    log_dicts = make_log_dicts(logger, config_names)
-    log_dict_ids = [int(i) for i in request.args.getlist('log_dict_id')]
-    requested_log_dicts = [log_dicts[i] for i in log_dict_ids]
-    return requested_log_dicts
-
-
-def make_log_dicts(logger, config_names):
-    log_entry_dicts = logger.load_log()
-    # df
-    column_names = ['model_name'] + config_names + ['timepoint']
-    column_names += ['num_saves'] if 'num_saves' not in config_names else []
-    df = pd.DataFrame(data={column_name: [d[column_name] for d in log_entry_dicts]
-                            for column_name in column_names})[column_names]
-    # make log_dicts
-    log_dicts = []
-    for config_values, group_df in df.groupby(config_names):
-        if not isinstance(config_values, tuple):
-            config_values = [config_values]
-        model_names = group_df['model_name'].tolist()
-        log_dict = {'model_names': model_names,
-                    'flavor': model_names[0].split('_')[1],
-                    'model_desc': '\n'.join('{}={}'.format(config_name, config_value)
-                                            for config_name, config_value in zip(config_names, config_values)),
-                    'data_rows': [row.tolist() for ow_id, row in group_df.iterrows()]}
-        log_dicts.append(log_dict)
-    results = log_dicts[::-1]
-    return results
+def make_project_rows(project_name):
+    res = []
+    for p in (config.RemoteDirs.research_data / project_name / 'runs').glob('param*'):
+        row = {'param1': p.name,
+               'param2': p.name}
+        res.append(row)
+    return res

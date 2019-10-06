@@ -49,6 +49,10 @@ table {
     margin: auto;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 div.containstable {
     overflow-x: auto;
     width: 95%;

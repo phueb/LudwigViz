@@ -1,10 +1,8 @@
 import base64
 from io import BytesIO
-import socket
 from wtforms.validators import ValidationError
 from wtforms import Form, StringField
 
-from ludwigviz import config
 
 
 class LudwigVizEmptySubmission(Exception):
@@ -13,15 +11,6 @@ class LudwigVizEmptySubmission(Exception):
         self.message = 'LudwigViz: Did not find "{}" in session and no default provided.'.format(key)
         if status_code is not None:
             self.status_code = status_code
-
-
-def make_topbar_dict(session):
-    hostname = socket.gethostname()
-    project_name = session.get('project_name', config.Default.project_name)
-
-    template_dict = {'Project:': project_name,
-                     'Host': hostname}
-    return template_dict
 
 
 def get_log_dicts_values(log_dicts, key):

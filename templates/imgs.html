@@ -1,26 +1,23 @@
 {% extends "layout.html" %}
 
 {% block ludwigviztop %}
-    <a href="{{ url_for('btns', model_name=model_name) }}">
+    <a href="{{ url_for('param_name', param_name=param_name) }}">
         <div class="mdl-card__title">
             <h3 class="mdl-card__title-text">
-                {{ model_name }} @ timepoint {{ timepoint }} | {{ hub_mode }}
+                {{ param_name }} | n={{ num_reps }}
             </h3>
         </div>
     </a>
     <div class="mdl-card__supporting-text">
-        <a href="{{ url_for('delete_one', model_name=model_name) }}" class="mdl-button">delete</a>
-        <a href="{{ url_for('generate', model_name=model_name) }}" class="mdl-button">generate</a>
-        <a href="{{ url_for('export_neighbors', model_name=model_name) }}" class="mdl-button">export neighbors</a>
-        <a href="{{ url_for('export_acts', model_name=model_name) }}" class="mdl-button">export word vectors</a>
-        <a href="{{ url_for('export_pca_loadings', model_name=model_name) }}" class="mdl-button">export pca</a>
+        <a href="{{ url_for('delete_one', model_name=param_name) }}" class="mdl-button">delete</a>
+        <a href="{{ url_for('generate', model_name=param_name) }}" class="mdl-button">generate</a>
+        <a href="{{ url_for('export_neighbors', model_name=param_name) }}" class="mdl-button">export neighbors</a>
+        <a href="{{ url_for('export_acts', model_name=param_name) }}" class="mdl-button">export word vectors</a>
+        <a href="{{ url_for('export_pca_loadings', model_name=param_name) }}" class="mdl-button">export pca</a>
     </div>
 {% endblock %}
 
 {% block ludwigvizmiddle %}
-    <div class="mdl-card__title">
-        <h3 class="mdl-card__title-text">{{ imgs_desc }}</h3>
-    </div>
     {% for img in imgs %}
         <img src="data:image/png;base64,{{ img }}" class="ludwigviz-img">
     {% endfor %}
