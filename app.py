@@ -94,12 +94,14 @@ def images(project_name, param_name):
             # collect chart
             json_charts.append(json_chart)
 
+    num_reps = len(df_file_names) // len(set(df_file_names))
+
     return render_template('imgs.html',
                            topbar_dict=topbar_dict,
                            project_name=project_name,
                            param_name=param_name,
                            param_id=to_param_id(param_name),
-                           num_reps=len(df_file_names),
+                           num_reps=num_reps,
                            json_charts=json_charts,
                            )
 
