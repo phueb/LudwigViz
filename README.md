@@ -13,6 +13,7 @@ A browser interface for [Ludwig](https://github.com/phueb/Ludwig), a job submiss
 * flask - the web app framework
 * pandas - for representing and owrking with tabular data
 * [altair](https://altair-viz.github.io/user_guide/saving_charts.html) - a fantastic visualization API for python
+* [Google Material Design Lite](https://getmdl.io/index.html) - css classes for styling
 
 ## TODO
 
