@@ -57,42 +57,49 @@ def project(project_name):
 @app.route('/<string:project_name>/<param_name>/', methods=['GET', 'POST'])
 def images(project_name, param_name):
 
-    # TODO there are multiple different csv files in each job_dir
-    # TODO each df can have multiple different columns
-    pattern = 'results_a.csv'  # TODO how to load only csv files with same name?
+    # TODO is there a way to plot confidence interval?
+    # TODO if not, then plot all the individual lines, instead of their average?
 
-    # concatenate all results
+    # get all file_names matching *.csv
     param_p = config.RemoteDirs.research_data / project_name / 'runs' / param_name
-    dfs = [pd.read_csv(p, index_col=0) for p in param_p.rglob(pattern)]
+    df_file_names = [p.name for p in param_p.rglob('*.csv')]
 
-    # average columns with the same name
-    concatenated_df = pd.concat(dfs, axis=1)
-    df = concatenated_df.groupby(by=concatenated_df.columns, axis=1).mean()
-    df['x'] = df.index
-
-    # iterate over column names, making a chart for each
+    # iterate over unique df file names
     json_charts = []
-    for column_name in df.columns:
-        if column_name == 'x':
-            continue
-        # make interactive chart and convert to json object
-        chart = alt.Chart(df).mark_line().encode(
-            x='x',
-            y=str(column_name),
-        ).interactive()
-        json_str = chart.to_json()
-        json_chart = json.loads(json_str)
-        json_chart['config']['view']['height'] *= config.Chart.scale_factor
-        json_chart['config']['view']['width'] *= config.Chart.scale_factor
-        # collect chart
-        json_charts.append(json_chart)
+    for pattern in set(df_file_names):
+        # get all dfs matching pattern
+        dfs = [pd.read_csv(p, index_col=0) for p in param_p.rglob(pattern)]
+
+        # average columns with the same name
+        concatenated_df = pd.concat(dfs, axis=1)
+        df = concatenated_df.groupby(by=concatenated_df.columns, axis=1).mean()
+        df['x'] = df.index
+
+        # iterate over column names, making a chart for each
+        for column_name in df.columns:
+            if column_name == 'x':
+                continue
+            # make interactive chart and convert to json object
+            chart = alt.Chart(df).mark_line().encode(
+                x='x',
+                y=str(column_name),
+            ).interactive()
+            # to json
+            json_str = chart.to_json()
+            json_chart = json.loads(json_str)
+            # set title and size
+            json_chart['config']['view']['height'] *= config.Chart.scale_factor
+            json_chart['config']['view']['width'] *= config.Chart.scale_factor
+            json_chart['title'] = pattern.rstrip('.csv').capitalize()
+            # collect chart
+            json_charts.append(json_chart)
 
     return render_template('imgs.html',
                            topbar_dict=topbar_dict,
                            project_name=project_name,
                            param_name=param_name,
                            param_id=to_param_id(param_name),
-                           num_reps=len(dfs),
+                           num_reps=len(df_file_names),
                            json_charts=json_charts,
                            )
 
