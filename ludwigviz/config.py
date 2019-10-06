@@ -16,7 +16,9 @@ class RemoteDirs:
     research_data = Path(mnt_point) / 'research_data'
 
     if not os.path.ismount(str(research_data)):
-        raise Exception('Please mount {}'.format(research_data))
+        print('WARNING: {} not mounted.'
+              'Creating dummy directory for development'.format(research_data))
+        research_data = Path(mnt_point) / 'dummy_data'
 
 
 class LocalDirs:
@@ -29,6 +31,10 @@ class LocalDirs:
 class Default:
     header = 'Param'
     order = 'ascending'
+
+
+class Time:
+    format = '%H:%M:%S %B %d, %Y'
 
 
 class Projects:

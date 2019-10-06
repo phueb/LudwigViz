@@ -17,6 +17,9 @@ A browser interface for [Ludwig](https://github.com/phueb/Ludwig), a job submiss
 
 ## TODO
 
-* sort runs by time instead of chronologically when sorting by Time Stamp
+* confidence-interval
+* add param2val - so that user can see params
 
+## Technical Note
  
+Requires Python >= 3.5.3 (due to altair dependency)

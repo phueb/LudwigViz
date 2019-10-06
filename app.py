@@ -4,11 +4,15 @@ from flask import request
 import argparse
 import json
 import socket
-import altair as alt
 import pandas as pd
+try:
+    import altair as alt
+except TypeError:
+    raise RuntimeError('altair requires Python > =3.5.3')
+
 
 from ludwigviz.io import make_runs_headers_and_rows
-from ludwigviz.io import to_param_id
+from ludwigviz.utils import to_param_id, sort_rows
 from ludwigviz.io import get_project_headers_and_rows
 
 
@@ -44,8 +48,7 @@ def project(project_name):
     # sort
     header = request.args.get('header') or config.Default.header
     order = request.args.get('order') or config.Default.order
-    rows = sorted(rows, key=lambda d: d[header],
-                  reverse=True if order == 'descending' else False)
+    rows = sort_rows(rows, header, order)
 
     return render_template('project.html',
                            topbar_dict=topbar_dict,
@@ -159,6 +162,7 @@ def handle_not_found_error(exception):
                            message=exception.message,
                            status_code=500,
                            topbar_dict=topbar_dict)
+
 
 @app.errorhandler(500)
 def handle_app_error(exception):
