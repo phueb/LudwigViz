@@ -51,11 +51,11 @@ def plot(project_name):
 
     in case 1, param_names is retrieved from request object.
     in case 2, param_names is retrieved from session object (because of redirect)
+
+    check request object first, and only then check session
     """
 
-    print(request.args)
-
-    param_names = session.get('param_names', request.args.getlist('param_name'))  # TODO test
+    param_names = request.args.getlist('param_name') or session.get('param_names')  # TODO test
 
     # TODO is there a way to plot confidence interval?
     # TODO if not, then plot all the individual lines, instead of their average?
