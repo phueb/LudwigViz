@@ -27,7 +27,7 @@
                 </thead>
                 <tbody>
                 {% for row in rows %}
-                    <tr class="clickable" data-href='{{ url_for('plot', project_name=project_name, param_names=row.param_name) }}'>
+                    <tr class="clickable" data-href='{{ url_for('plot', project_name=project_name, param_name=row.param_name) }}'>
                         <td class="mdl-data-table__cell--non-numeric">
                             <label for="row_id{{ loop.index0 }}" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select">
                                 <input type="checkbox"

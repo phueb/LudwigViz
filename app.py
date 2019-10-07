@@ -44,8 +44,18 @@ def project(project_name):
 
 @app.route('/<string:project_name>/plot', methods=['GET', 'POST'])
 def plot(project_name):
+    """
+    is requested in two ways:
+    1. directly clicking on row in project.html
+    2. by selecting multiple runs and clicking on "plot" button
 
-    param_names = session['param_names']
+    in case 1, param_names is retrieved from request object.
+    in case 2, param_names is retrieved from session object (because of redirect)
+    """
+
+    print(request.args)
+
+    param_names = session.get('param_names', request.args.getlist('param_name'))  # TODO test
 
     # TODO is there a way to plot confidence interval?
     # TODO if not, then plot all the individual lines, instead of their average?

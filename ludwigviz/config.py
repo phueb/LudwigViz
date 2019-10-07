@@ -25,7 +25,7 @@ class LocalDirs:
 
 
 class Default:
-    header = 'Param'
+    header = 'Last modified'
     order = 'ascending'
 
 
