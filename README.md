@@ -19,9 +19,8 @@ A browser interface for [Ludwig](https://github.com/phueb/Ludwig), a job submiss
 
 * confidence-interval
 * add param2val - so that user can see params
-* delete some runs
-* use two_group_btn_names
-* use any_group_btn_names
+* implement deleting of data associated with runs
+* "compare" button is not used
 
 ## Technical Note
  

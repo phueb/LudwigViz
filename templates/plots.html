@@ -7,8 +7,8 @@
 
     </div>
     <div class="mdl-card__supporting-text">
-    {%  for param_id in param_ids %}
-        <p>Param={{ param_id }} | n={{ num_reps }}</p>
+    {%  for param_name in param_names %}
+        <p>{{ param_name }} | n={{ param_name2n[param_name] }}</p>
     {%  endfor %}
     </div>
     <div class="mdl-card__actions mdl-card--border">

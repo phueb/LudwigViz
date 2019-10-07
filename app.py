@@ -2,16 +2,7 @@ from flask import Flask, redirect, url_for
 from flask import render_template
 from flask import request, session
 import argparse
-import json
 import socket
-import pandas as pd
-try:
-    import altair as alt
-except TypeError:
-    raise RuntimeError('altair requires Python > =3.5.3')
-
-
-
 
 import ludwigviz
 
@@ -54,58 +45,44 @@ def project(project_name):
 @app.route('/<string:project_name>/plot', methods=['GET', 'POST'])
 def plot(project_name):
 
-    param_names = session['param_names']  # TODO how to plot multiple param_names?
+    param_names = session['param_names']
 
     # TODO is there a way to plot confidence interval?
     # TODO if not, then plot all the individual lines, instead of their average?
 
     # get all patterns (all possible csv file names) - assume each run has same pattern
-    param_p = config.RemoteDirs.research_data / project_name / 'runs' / param_names[0]
-    patterns = set([p.name for p in param_p.rglob('*.csv')])
+    first_param_path = to_param_path(project_name, param_names[0])
+    patterns = set([p.name for p in first_param_path.rglob('*.csv')])
 
     if not patterns:
-        raise LudwigVizNoCsvFound(param_p)
+        raise LudwigVizNoCsvFound(first_param_path)
     else:
         print('Detected patterns={}'.format(patterns))
 
     # iterate over unique df file names (e.g. results_a.csv, results_b.csv)
+    param_name2n = None
     json_charts = []
     for pattern in patterns:
-        # get all dfs matching pattern
-        dfs = [pd.read_csv(p, index_col=0) for p in param_p.rglob(pattern)]
+        print('pattern="{}"'.format(pattern))
+        # get data frame where each column represents a mean for a particular param_name
+        data = aggregate_data(project_name, param_names, pattern)
+        # make chart
+        title = pattern.rstrip('.csv').capitalize()
+        column_name = data.columns[0]
+        json_chart = make_json_chart(data, column_name, title)
+        # collect chart
+        json_charts.append(json_chart)
+        # update n
+        param_name2n = {param_name: data['param_name'].tolist().count(param_name)
+                        for param_name in param_names}
 
-        # average columns with the same name
-        concatenated_df = pd.concat(dfs, axis=1)
-        df = concatenated_df.groupby(by=concatenated_df.columns, axis=1).mean()
-        df['x'] = df.index
-
-        # iterate over column names, making a chart for each
-        for column_name in df.columns:
-            if column_name == 'x':
-                continue
-            # make interactive chart and convert to json object
-            chart = alt.Chart(df).mark_line().encode(
-                x='x',
-                y=str(column_name),  # TODO how to plot multiple y?
-            ).interactive()
-            # to json
-            json_str = chart.to_json()
-            json_chart = json.loads(json_str)
-            # set title and size
-            json_chart['config']['view']['height'] *= config.Chart.scale_factor
-            json_chart['config']['view']['width'] *= config.Chart.scale_factor
-            json_chart['title'] = pattern.rstrip('.csv').capitalize()
-            # collect chart
-            json_charts.append(json_chart)
-
-    num_reps = 'not implemented'  # TODO
     param_ids = [to_param_id(param_name) for param_name in param_names]
     return render_template('plots.html',
                            topbar_dict=topbar_dict,
                            project_name=project_name,
                            param_names=param_names,
                            param_ids=param_ids,
-                           num_reps=num_reps,  # TODO calc this for each param_name separately
+                           param_name2n=param_name2n,
                            json_charts=json_charts,
                            )
 
@@ -225,7 +202,11 @@ if __name__ == "__main__":  # pycharm does not use this
     # import after specifying path to data
     from ludwigviz import config
     from ludwigviz.io import make_runs_headers_and_rows
-    from ludwigviz.utils import to_param_id, sort_rows
+    from ludwigviz.utils import to_param_id
+    from ludwigviz.utils import sort_rows
+    from ludwigviz.utils import to_param_path
+    from ludwigviz.utils import aggregate_data
+    from ludwigviz.utils import make_json_chart
     from ludwigviz.io import get_project_headers_and_rows
 
     topbar_dict = {'listing': config.RemoteDirs.research_data,
