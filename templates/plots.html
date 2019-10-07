@@ -7,10 +7,12 @@
 
     </div>
     <div class="mdl-card__supporting-text">
-        Param={{ param_id }} | n={{ num_reps }}
+    {%  for param_id in param_ids %}
+        <p>Param={{ param_id }} | n={{ num_reps }}</p>
+    {%  endfor %}
     </div>
     <div class="mdl-card__actions mdl-card--border">
-        <a href="{{ url_for('images', project_name=project_name, param_name=param_name) }}"
+        <a href="{{ url_for('plot', project_name=project_name, param_name=param_names) }}"
            class="mdl-button">Re-load</a>
         <a href="{{ url_for('project', project_name=project_name) }}"
            class="mdl-button">Back</a>

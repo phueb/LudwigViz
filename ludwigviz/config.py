@@ -1,24 +1,20 @@
 from pathlib import Path
-import sys
 import os
 
-
-if 'win' in sys.platform:
-    raise SystemExit('Ludwig does not support Windows')
-elif 'linux' == sys.platform:
-    mnt_point = '/media'
-else:
-    # assume MacOS
-    mnt_point = '/Volumes'
+from ludwigviz import dummy_data, mnt_point
 
 
 class RemoteDirs:
-    research_data = Path(mnt_point) / 'research_data'
 
-    if not os.path.ismount(str(research_data)):
-        print('WARNING: {} not mounted.'
-              'Creating dummy directory for development'.format(research_data))
-        research_data = Path(mnt_point) / 'dummy_data'
+    if dummy_data is None:
+        research_data = Path(mnt_point) / 'research_data'
+        if not os.path.ismount(str(research_data)):
+            print('WARNING: {} not mounted.'
+                  'Using dummy directory for development'.format(research_data))
+            research_data = Path(mnt_point) / 'dummy_data'
+    # use dummy
+    else:
+        research_data = Path(dummy_data)
 
 
 class LocalDirs:
@@ -31,6 +27,11 @@ class LocalDirs:
 class Default:
     header = 'Param'
     order = 'ascending'
+
+
+class Buttons:
+    any_group_btn_names = ['plot']  # TODO use
+    two_group_btn_names = ['compare']
 
 
 class Time:

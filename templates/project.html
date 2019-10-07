@@ -27,16 +27,16 @@
                 </thead>
                 <tbody>
                 {% for row in rows %}
-                    <tr class="clickable" data-href='{{ url_for('images', project_name=project_name, param_name=row.param_name) }}'>
+                    <tr class="clickable" data-href='{{ url_for('plot', project_name=project_name, param_names=row.param_name) }}'>
                         <td class="mdl-data-table__cell--non-numeric">
                             <label for="row_id{{ loop.index0 }}" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select">
                                 <input type="checkbox"
-                                       name="log_dict_id"
+                                       name="param_name"
                                        id="row_id{{ loop.index0 }}"
                                        class="mdl-checkbox__input"
-                                       value="{{ loop.index0 }}"
+                                       value="{{ row.param_name }}"
                                        form="form-group_action">
-                                <span class="mdl-checkbox__label">{{ row.Param }}</span>
+                                <span class="mdl-checkbox__label" id="tooltip_id{{ loop.index0 }}">{{ row.Param }}</span>
                             </label>
                         </td>
                         {% for k in headers %}
@@ -45,13 +45,25 @@
                             {% endif %}
                         {% endfor %}
                     </tr>
+
+                    <span class="mdl-tooltip" for="tooltip_id{{ loop.index0 }}">
+                        <p>testing teh tooltip</p>
+                        <p>testing teh tooltip</p>
+                        <p>testing teh tooltip</p>
+                        <p>testing teh tooltip</p>
+                        <p>testing teh tooltip</p>
+                        <p>testing teh tooltip</p>
+                        <p>testing teh tooltip</p>
+                        <p>testing teh tooltip</p>
+                    </span>
+
                 {% endfor %}
                 </tbody>
             </table>
         </div>
     {% else %}
         <div class="mdl-card__title">
-            <h3 class="mdl-card__title-text">No models logged</h3>
+            <h3 class="mdl-card__title-text">No jobs found</h3>
         </div>
     {% endif %}
 
@@ -70,30 +82,35 @@
 {% endblock %}
 
 {% block ludwigviz_middle %}
-    <form action="{{ url_for('group_action') }}" id="form-group_action"></form>
+    <form action="{{ url_for('group_action', project_name=project_name) }}" id="form-group_action"></form>
 
-    <div class="mdl-card__title needs-any">
-        <h3 class="mdl-card__title-text">Multi Group Actions:</h3>
+    <div class="mdl-card__title ">
+        <h4 class="mdl-card__title-text">Multi Group Actions:</h4>
     </div>
-    <div class="mdl-grid needs-any">
-        {% for multi_group_btn_name in multi_group_btn_names %}
+    <div class="mdl-card__actions mdl-card--border">
+        {% for any_group_btn_name in any_group_btn_names %}
             <div class="mdl-cell mdl-cell--4-col">
-                <input type="submit" name="group_btn_name" value="{{ multi_group_btn_name }}" class="mdl-button" form="form-group_action">
+                <input type="submit"
+                       name="action"
+                       value="{{ any_group_btn_name }}"
+                       class="mdl-button  needs-any"
+                       form="form-group_action">
             </div>
         {% endfor %}
-        <div class="mdl-cell mdl-cell--4-col">
-            <input type="submit" name="delete_many" class="mdl-button" value="Delete" form="form-group_action">
-        </div>
     </div>
 
-    <div class="mdl-card__actions mdl-card--border"></div>
-    <div class="mdl-card__title needs-2">
-        <h3 class="mdl-card__title-text">2 Group Actions:</h3>
+
+    <div class="mdl-card__title">
+        <h4 class="mdl-card__title-text">2 Group Actions:</h4>
     </div>
-    <div class="mdl-grid needs-2">
+    <div class="mdl-card__actions mdl-card--border">
         {% for two_group_btn_name in two_group_btn_names %}
             <div class="mdl-cell mdl-cell--4-col">
-                <input type="submit" name="group_btn_name" value="{{ two_group_btn_name }}" class="mdl-button" form="form-group_action">
+                <input type="submit"
+                       name="action"
+                       value="{{ two_group_btn_name }}"
+                       class="mdl-button  needs-2"
+                       form="form-group_action">
             </div>
         {% endfor %}
     </div>
