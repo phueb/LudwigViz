@@ -55,7 +55,7 @@ def plot(project_name):
     check request object first, and only then check session
     """
 
-    param_names = request.args.getlist('param_name') or session.get('param_names')  # TODO test
+    param_names = request.args.getlist('param_name') or session.get('param_names')
 
     # TODO is there a way to plot confidence interval?
     # TODO if not, then plot all the individual lines, instead of their average?
@@ -70,7 +70,6 @@ def plot(project_name):
         print('Detected patterns={}'.format(patterns))
 
     # iterate over unique df file names (e.g. results_a.csv, results_b.csv)
-    param_name2n = None
     json_charts = []
     for pattern in patterns:
         print('pattern="{}"'.format(pattern))
@@ -82,16 +81,14 @@ def plot(project_name):
         json_chart = make_json_chart(data, column_name, title)
         # collect chart
         json_charts.append(json_chart)
-        # update n
-        param_name2n = {param_name: data['param_name'].tolist().count(param_name)
-                        for param_name in param_names}
 
-    param_ids = [to_param_id(param_name) for param_name in param_names]
+    # get number of reps for each param_name
+    param_name2n = {param_name: len(list(to_param_path(project_name, param_name).glob('*[!.yaml]')))
+                    for param_name in param_names}
     return render_template('plots.html',
                            topbar_dict=topbar_dict,
                            project_name=project_name,
                            param_names=param_names,
-                           param_ids=param_ids,
                            param_name2n=param_name2n,
                            json_charts=json_charts,
                            )
