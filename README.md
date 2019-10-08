@@ -15,16 +15,26 @@ A browser interface for [Ludwig](https://github.com/phueb/Ludwig), a job submiss
 * [altair](https://altair-viz.github.io/user_guide/saving_charts.html) - a fantastic visualization API for python
 * [Google Material Design Lite](https://getmdl.io/index.html) - css classes for styling
 
-## TODO
+## Starting the app
 
-* confidence-interval
-* add param2val - so that user can see params
-* implement deleting of data associated with runs
-* "compare" button is not used
+A flask app can be run in at least 2 ways:
+1. `python -m flask run`
+2. `python app.py `
 
-## Technical Note
+Pycharm uses method 1, and sets `FLASK_ENV` to "development'.
+Any `app.run()` call is ignored. 
+
+Method 2 is preferred because it allows custom argument parsing. 
+By default this results in `FLASK_ENV` set to "production". 
+
+## Technicalities
+
+### Compatibility
  
 Requires Python >= 3.5.3 (due to altair dependency)
+
+
+### Network Connection to Ludwig
 
 If network connection is not available, 
 development is possible using the `--dummy` flag:
@@ -34,3 +44,10 @@ python app.py --dummy
 ```
 
 This tells the application to load csv files from a dummy location.
+
+## TODO
+
+* plotting of confidence-interval
+* add param2val - so that user can see params
+* implement deleting of data associated with runs
+* "compare" button is not used

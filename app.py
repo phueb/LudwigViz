@@ -195,6 +195,9 @@ def page_not_found(exception):
 
 
 if __name__ == "__main__":  # pycharm does not use this
+
+
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--no_debug', action="store_false", default=True, dest='debug',
                         help='Use this for deployment.')
