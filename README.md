@@ -48,6 +48,5 @@ This tells the application to load csv files from a dummy location.
 ## TODO
 
 * plotting of confidence-interval
-* add param2val - so that user can see params
 * implement deleting of data associated with runs
 * "compare" button is not used

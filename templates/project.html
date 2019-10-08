@@ -47,14 +47,7 @@
                     </tr>
 
                     <span class="mdl-tooltip" for="tooltip_id{{ loop.index0 }}">
-                        <p>testing teh tooltip</p>
-                        <p>testing teh tooltip</p>
-                        <p>testing teh tooltip</p>
-                        <p>testing teh tooltip</p>
-                        <p>testing teh tooltip</p>
-                        <p>testing teh tooltip</p>
-                        <p>testing teh tooltip</p>
-                        <p>testing teh tooltip</p>
+                        {{ row.tooltip | safe }}
                     </span>
 
                 {% endfor %}

@@ -25,7 +25,7 @@ def home():
 
 @app.route('/<string:project_name>', methods=['GET', 'POST'])
 def project(project_name):
-    headers, rows = make_runs_headers_and_rows(project_name)
+    headers, rows = make_params_headers_and_rows(project_name)
 
     # sort
     if rows:
@@ -211,7 +211,7 @@ if __name__ == "__main__":  # pycharm does not use this
 
     # import after specifying path to data
     from ludwigviz import config
-    from ludwigviz.io import make_runs_headers_and_rows
+    from ludwigviz.io import make_params_headers_and_rows
     from ludwigviz.utils import sort_rows
     from ludwigviz.utils import to_param_path
     from ludwigviz.utils import aggregate_data
