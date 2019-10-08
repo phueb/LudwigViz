@@ -83,7 +83,7 @@ def plot(project_name):
         json_charts.append(json_chart)
 
     # get number of reps for each param_name
-    param_name2n = {param_name: len(list(to_param_path(project_name, param_name).glob('*[!.yaml]')))
+    param_name2n = {param_name: count_replications(project_name, param_name)
                     for param_name in param_names}
     return render_template('plots.html',
                            topbar_dict=topbar_dict,
@@ -209,12 +209,12 @@ if __name__ == "__main__":  # pycharm does not use this
     # import after specifying path to data
     from ludwigviz import config
     from ludwigviz.io import make_runs_headers_and_rows
-    from ludwigviz.utils import to_param_id
     from ludwigviz.utils import sort_rows
     from ludwigviz.utils import to_param_path
     from ludwigviz.utils import aggregate_data
     from ludwigviz.utils import make_json_chart
     from ludwigviz.io import get_project_headers_and_rows
+    from ludwigviz.io import count_replications
 
     topbar_dict = {'listing': config.RemoteDirs.research_data,
                    'hostname': hostname,

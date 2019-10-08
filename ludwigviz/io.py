@@ -1,5 +1,9 @@
 from ludwigviz import config
-from ludwigviz.utils import to_param_id, get_time_modified
+from ludwigviz.utils import to_param_id, get_time_modified, to_param_path
+
+
+def count_replications(project_name, param_name):
+    return len(list(to_param_path(project_name, param_name).glob('*[!.yaml]')))
 
 
 def get_project_headers_and_rows():
@@ -19,12 +23,12 @@ def get_project_headers_and_rows():
 
 
 def make_runs_headers_and_rows(project_name):
-    headers = ['Param', 'Last modified', 'Replications']
+    headers = ['Param', 'Last modified', 'n']
     rows = []
     for p in (config.RemoteDirs.research_data / project_name / 'runs').glob('param*'):
         row = {headers[0]: to_param_id(p.name),
                headers[1]: get_time_modified(p),
-               headers[2]: len(list(p.glob('*'))),
+               headers[2]: count_replications(project_name, p.name),
                'param_name': p.name,
                }
         rows.append(row)
