@@ -127,8 +127,22 @@ def group_action(project_name):
     if action == 'plot':
         return redirect(url_for('plot', project_name=project_name))
 
-    elif action == 'compare':
-        raise NotImplementedError
+    elif action == 'compare params':
+
+        message = ''  # TODO test
+
+        param2val_list = [Params(to_param_path(project_name, param_name)).param2val
+                          for param_name in param_names]
+        keys = list(Params(to_param_path(project_name, param_names[0])).param2val.keys())  # assume each has same keys
+        for key in keys:
+            param_values = [param2val[key] for param2val in param2val_list]
+            if len(set(param_values)) != 1:  # param_values differ between configurations
+                message += '<p><b>{}</b>={}</p>'.format(key, param_values)
+
+        return render_template('message.html',
+                               topbar_dict=topbar_dict,
+                               title='Parameter Configuration Comparison',
+                               message=message)
 
     if action == 'delete_many':
         return redirect(url_for('delete_many',
@@ -136,8 +150,6 @@ def group_action(project_name):
 
     else:
         raise ValueError('No handler found for action "{}"'.format(request.args.get('action')))
-
-    # TODO add more cases here
 
 
 @app.route('/delete_many/<string:project_name>', methods=['GET', 'POST'])
@@ -195,9 +207,6 @@ def page_not_found(exception):
 
 
 if __name__ == "__main__":  # pycharm does not use this
-
-
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--no_debug', action="store_false", default=True, dest='debug',
                         help='Use this for deployment.')
@@ -218,6 +227,7 @@ if __name__ == "__main__":  # pycharm does not use this
     from ludwigviz.utils import make_json_chart
     from ludwigviz.io import get_project_headers_and_rows
     from ludwigviz.io import count_replications
+    from ludwigviz.io import Params
 
     topbar_dict = {'listing': config.RemoteDirs.research_data,
                    'hostname': hostname,
