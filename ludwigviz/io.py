@@ -53,9 +53,6 @@ def make_params_headers_and_rows(project_name):
     headers = ['Param', 'Last modified', 'n']
     rows = []
     for p in (config.RemoteDirs.research_data / project_name / 'runs').glob('param*'):
-
-
-
         row = {headers[0]: to_param_id(p.name),
                headers[1]: get_time_modified(p),
                headers[2]: count_replications(project_name, p.name),

@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block ludwigviz_top %}
+
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">{{ project_name }}</h3>
+
+    </div>
+    <div class="mdl-card__supporting-text">
+    {%  for param_name in param_names %}
+        <p>{{ param_name }}</p>
+    {%  endfor %}
+    </div>
+    <div class="mdl-card__actions mdl-card--border">
+        <a href="{{ url_for('project', project_name=project_name) }}"
+           class="mdl-button">Back</a>
+    </div>
+
+{% endblock %}
+
+{% block ludwigviz_middle %}
+    <div class="mdl-card__title">
+        <h3 class="mdl-card__title-text">{{ title }}</h3>
+    </div>
+    <div class="mdl-card__supporting-text">
+        <p><span style="">{{ message | safe }}</span></p>
+    </div>
+{% endblock %}
+
+{% block ludwigviz_bottom %}
+{% endblock %}
