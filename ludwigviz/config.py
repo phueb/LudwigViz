@@ -35,7 +35,7 @@ class Buttons:
 
 
 class Time:
-    format = '%H:%M:%S %B %d, %Y'
+    format = '%H:%M %B %d'
 
 
 class Projects:
