@@ -141,6 +141,8 @@ def group_action(project_name):
 
         return render_template('message.html',
                                topbar_dict=topbar_dict,
+                               project_name=project_name,
+                               param_names=param_names,
                                title='Parameter Configuration Comparison',
                                message=message)
 
