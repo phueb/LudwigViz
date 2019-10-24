@@ -3,6 +3,7 @@ from flask import render_template
 from flask import request, session
 import argparse
 import socket
+import yaml
 
 import ludwigviz
 
@@ -131,9 +132,14 @@ def group_action(project_name):
 
         message = ''  # TODO test
 
-        param2val_list = [Params(to_param_path(project_name, param_name)).param2val
-                          for param_name in param_names]
-        keys = list(Params(to_param_path(project_name, param_names[0])).param2val.keys())  # assume each has same keys
+        param2val_list = []
+        for param_name in param_names:
+            param_path = to_param_path(project_name, param_name)
+            with (param_path / 'param2val').open('r') as f:
+                param2val = yaml.load(f)
+            param2val_list.append(param2val)
+
+        keys = param2val_list[0].keys()  # assume each has same keys
         for key in keys:
             param_values = [param2val[key] for param2val in param2val_list]
             if len(set(param_values)) != 1:  # param_values differ between configurations
@@ -229,7 +235,6 @@ if __name__ == "__main__":  # pycharm does not use this
     from ludwigviz.utils import make_json_chart
     from ludwigviz.io import get_project_headers_and_rows
     from ludwigviz.io import count_replications
-    from ludwigviz.io import Params
 
     topbar_dict = {'listing': config.RemoteDirs.research_data,
                    'hostname': hostname,
@@ -238,4 +243,4 @@ if __name__ == "__main__":  # pycharm does not use this
                    }
 
     app.secret_key = 'ja0f09'
-    app.run(port=5000, debug=namespace.debug, host='0.0.0.0')
+    app.run(port=5001, debug=namespace.debug, host='0.0.0.0')
