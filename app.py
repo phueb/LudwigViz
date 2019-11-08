@@ -121,6 +121,8 @@ def group_action(project_name):
     do some operation on one or more runs, e.g. plot results, or delete their data, etc.
     """
 
+    excluded_keys = ['param_name', 'job_name', 'save_path', 'project_path']
+
     param_names = request.args.getlist('param_name')
     action = request.args.get('action')
     session['param_names'] = param_names
@@ -130,16 +132,16 @@ def group_action(project_name):
 
     elif action == 'compare params':
 
-        message = ''  # TODO test
+        message = ''
 
         param2val_list = []
         for param_name in param_names:
             param_path = to_param_path(project_name, param_name)
-            with (param_path / 'param2val').open('r') as f:
+            with (param_path / 'param2val.yaml').open('r') as f:
                 param2val = yaml.load(f)
             param2val_list.append(param2val)
 
-        keys = param2val_list[0].keys()  # assume each has same keys
+        keys = [k for k in param2val_list[0].keys() if not k in excluded_keys]
         for key in keys:
             param_values = [param2val[key] for param2val in param2val_list]
             if len(set(param_values)) != 1:  # param_values differ between configurations
