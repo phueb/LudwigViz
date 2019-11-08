@@ -30,8 +30,8 @@ class Default:
 
 
 class Buttons:
-    any_group_btn_names = ['plot']  # TODO use
-    two_group_btn_names = ['compare params']
+    any_group_btn_names = ['plot']
+    two_group_btn_names = []
 
 
 class Time:

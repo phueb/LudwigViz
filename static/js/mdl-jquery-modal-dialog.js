@@ -19,8 +19,8 @@ function hideLoading() {
 function showDialog(options) {
     options = $.extend({
         id: 'orrsDiag',
-        title: null,
-        text: null,
+        title: 'ttile',
+        text: 'text',
         neutral: false,
         negative: false,
         positive: false,

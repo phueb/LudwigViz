@@ -10,9 +10,11 @@
     </div>
     <div class="mdl-card__actions mdl-card--border">
         <a href="{{ url_for('project', project_name=project_name) }}"
-           class="mdl-button">Re-load</a>
+           class="mdl-button show-loading">Re-load</a>
         <a href="{{ url_for('home') }}"
-           class="mdl-button">Back</a>
+           class="mdl-button show-loading">Back</a>
+{#        TODO #}
+        <button class="mdl-button show-dialog">Params</button>
     </div>
 
     {% if rows %}
@@ -86,7 +88,7 @@
                 <input type="submit"
                        name="action"
                        value="{{ any_group_btn_name }}"
-                       class="mdl-button  needs-any"
+                       class="mdl-button needs-any"
                        form="form-group_action">
             </div>
         {% endfor %}
@@ -102,7 +104,7 @@
                 <input type="submit"
                        name="action"
                        value="{{ two_group_btn_name }}"
-                       class="mdl-button  needs-2"
+                       class="mdl-button show-loading  needs-2"
                        form="form-group_action">
             </div>
         {% endfor %}
@@ -142,7 +144,7 @@
     </div>
 
     <div class="mdl-card__actions mdl-card--border">
-        <input type="submit" name="reorder" class="mdl-button" value="Re-order" form="form-group">
+        <input type="submit" name="reorder" class="mdl-button show-loading" value="Re-order" form="form-group">
     </div>
 
     <script type='text/javascript'>
@@ -172,6 +174,14 @@
 
 
             });
+
+            {#TODO test#}
+            $('.show-dialog').click(function(){
+                showDialog();
+            });
+
         });
     </script>
+
+
 {% endblock %}

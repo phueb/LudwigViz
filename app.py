@@ -138,10 +138,10 @@ def group_action(project_name):
         for param_name in param_names:
             param_path = to_param_path(project_name, param_name)
             with (param_path / 'param2val.yaml').open('r') as f:
-                param2val = yaml.load(f)
+                param2val = yaml.load(f, Loader=yaml.FullLoader)
             param2val_list.append(param2val)
 
-        keys = [k for k in param2val_list[0].keys() if not k in excluded_keys]
+        keys = [k for k in param2val_list[0].keys() if k not in excluded_keys]
         for key in keys:
             param_values = [param2val[key] for param2val in param2val_list]
             if len(set(param_values)) != 1:  # param_values differ between configurations

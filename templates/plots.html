@@ -13,9 +13,9 @@
     </div>
     <div class="mdl-card__actions mdl-card--border">
         <a href="{{ url_for('plot', project_name=project_name, param_name=param_names) }}"
-           class="mdl-button">Re-load</a>
+           class="mdl-button show-loading">Re-load</a>
         <a href="{{ url_for('project', project_name=project_name) }}"
-           class="mdl-button">Back</a>
+           class="mdl-button show-loading">Back</a>
     </div>
 
 {% endblock %}
