@@ -112,6 +112,33 @@ def which_hidden_btns():
     return result
 
 
+@app.route('/compare_params/<string:project_name>/', methods=['GET', 'POST'])
+def compare_params(project_name):
+    excluded_keys = ['param_name', 'job_name', 'save_path', 'project_path']
+
+    if request.method == 'POST':
+        param_names = request.get_json()['param_names']
+        print('param_names:')
+        print(param_names)
+    else:
+        param_names = []
+
+    param2val_list = []
+    for param_name in param_names:
+        param_path = to_param_path(project_name, param_name)
+        with (param_path / 'param2val.yaml').open('r') as f:
+            param2val = yaml.load(f, Loader=yaml.FullLoader)
+        param2val_list.append(param2val)
+
+    message = ''
+    keys = [k for k in param2val_list[0].keys() if k not in excluded_keys]
+    for key in keys:
+        param_values = [param2val[key] for param2val in param2val_list]
+        if len(set(param_values)) != 1:  # param_values differ between configurations
+            message += '<p><b>{}</b>={}</p>'.format(key, param_values)
+    return message + '<p>(shown in order of configurations selected)</p>'
+
+
 # -------------------------------------------- actions
 
 
@@ -120,39 +147,12 @@ def group_action(project_name):
     """
     do some operation on one or more runs, e.g. plot results, or delete their data, etc.
     """
-
-    excluded_keys = ['param_name', 'job_name', 'save_path', 'project_path']
-
     param_names = request.args.getlist('param_name')
     action = request.args.get('action')
     session['param_names'] = param_names
 
     if action == 'plot':
         return redirect(url_for('plot', project_name=project_name))
-
-    elif action == 'compare params':
-
-        message = ''
-
-        param2val_list = []
-        for param_name in param_names:
-            param_path = to_param_path(project_name, param_name)
-            with (param_path / 'param2val.yaml').open('r') as f:
-                param2val = yaml.load(f, Loader=yaml.FullLoader)
-            param2val_list.append(param2val)
-
-        keys = [k for k in param2val_list[0].keys() if k not in excluded_keys]
-        for key in keys:
-            param_values = [param2val[key] for param2val in param2val_list]
-            if len(set(param_values)) != 1:  # param_values differ between configurations
-                message += '<p><b>{}</b>={}</p>'.format(key, param_values)
-
-        return render_template('message.html',
-                               topbar_dict=topbar_dict,
-                               project_name=project_name,
-                               param_names=param_names,
-                               title='Parameter Configuration Comparison',
-                               message=message)
 
     if action == 'delete_many':
         return redirect(url_for('delete_many',

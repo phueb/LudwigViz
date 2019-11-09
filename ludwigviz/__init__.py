@@ -5,7 +5,7 @@ if sys.platform == 'darwin':
 elif 'linux' == sys.platform:
     mnt_point = '/media'
 else:
-    raise SystemExit('Ludwig currently does not support this platform')
+    raise SystemExit('Did not find mount point. User must add custom mount point')
 
 
 __version__ = '1.0.0'

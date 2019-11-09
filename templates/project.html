@@ -13,7 +13,7 @@
            class="mdl-button show-loading">Re-load</a>
         <a href="{{ url_for('home') }}"
            class="mdl-button show-loading">Back</a>
-{#        TODO #}
+        {#        TODO #}
         <button class="mdl-button show-dialog">Params</button>
     </div>
 
@@ -152,7 +152,7 @@
             $('.needs-2').css('color', 'lightgrey');
             $('.needs-any').css('color', 'lightgrey');
             $('input[type="checkbox"]').click(function(e){
-                var num_checkboxes_clicked = $("input[name='" + $(this).attr('name') + "']:checked").length;
+                const num_checkboxes_clicked = $("input[name='" + $(this).attr('name') + "']:checked").length;
                 $.ajax({
                     url: '{{ url_for("which_hidden_btns") }}',
                     data: {num_checkboxes_clicked: num_checkboxes_clicked},
@@ -177,7 +177,33 @@
 
             {#TODO test#}
             $('.show-dialog').click(function(){
-                showDialog();
+                var param_names = [];
+                $("input[name='param_name']:checked").each(function() {
+                    param_names.push($(this).attr('value'));
+                });
+                $.ajax({
+                    type: 'POST',
+                    contentType: 'application/json;charset=utf-8',
+                    url: '{{ url_for("compare_params", project_name=project_name) }}',
+                    traditional: 'true',
+                    data: JSON.stringify({param_names}),
+                    success: function(result){
+                        showDialog({
+                            title: 'Parameter Comparison',
+                            text: result,
+                            positive: {
+                                id: 'ok-button',
+                                title: 'OK',
+                            }
+                        });
+                    },
+                    error (result) {
+                        console.log(result);
+                    }
+                });
+
+
+
             });
 
         });
