@@ -59,7 +59,7 @@ def aggregate_data(project_name, param_names, pattern):
         param_path = to_param_path(project_name, param_name)
         series_list = [pd.read_csv(p, index_col=0, squeeze=True) for p in param_path.rglob(pattern)]
         # average columns with the same name
-        concatenated_df = pd.concat(series_list, axis=1)
+        concatenated_df = pd.concat((s for s in series_list if len(s) > 1), axis=1)
         mean_df = concatenated_df.groupby(by=concatenated_df.columns, axis=1).mean()
         mean_df['param_name'] = param_name
         # rename
@@ -69,7 +69,7 @@ def aggregate_data(project_name, param_names, pattern):
         # collect
         mean_dfs.append(mean_df)
 
-    res = pd.concat(mean_dfs, axis=0)
+    res = pd.concat(mean_dfs, axis=0)  # raises Value error if list is empty
     return res
 
 

@@ -75,7 +75,11 @@ def plot(project_name):
     for pattern in patterns:
         print('pattern="{}"'.format(pattern))
         # get data frame where each column represents a mean for a particular param_name
-        data = aggregate_data(project_name, param_names, pattern)
+        try:
+            data = aggregate_data(project_name, param_names, pattern)
+        except ValueError:  # empty data frames
+            print(f'WARNING: Failed ot aggregate data for pattern={pattern}')
+            continue
         # make chart
         title = pattern.rstrip('.csv').capitalize()
         column_name = data.columns[0]
