@@ -1,5 +1,5 @@
 flask
 pandas
 wtforms
-altair
+altair==3.3
 PyYaml
