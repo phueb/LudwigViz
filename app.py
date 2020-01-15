@@ -81,7 +81,7 @@ def plot(project_name):
             print(f'WARNING: Failed ot aggregate data for pattern={pattern}')
             continue
         # make chart
-        title = pattern.rstrip('.csv').capitalize()
+        title = ''  # pattern.rstrip('.csv').capitalize()
         column_name = data.columns[0]
         json_chart = make_json_chart(data, column_name, title)
         # collect chart
@@ -137,7 +137,9 @@ def compare_params(project_name):
     message = ''
     keys = [k for k in param2val_list[0].keys() if k not in excluded_keys]
     for key in keys:
-        param_values = [param2val[key] for param2val in param2val_list]
+        # param_values = [param2val[key] for param2val in param2val_list]
+        param_values = [tuple(param2val[key]) if isinstance(param2val[key], list) else param2val[key]
+                        for param2val in param2val_list]
         if len(set(param_values)) != 1:  # param_values differ between configurations
             message += '<p><b>{}</b>={}</p>'.format(key, param_values)
     return message + '<p>(shown in order of configurations selected)</p>'
