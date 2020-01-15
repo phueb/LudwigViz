@@ -25,7 +25,7 @@ def get_project_headers_and_rows():
 
 
 def make_params_headers_and_rows(project_name):
-    headers = ['Param', 'Last modified', 'n']
+    headers = ['Param', 'Last modified', 'n', 'not-ludwig']
     rows = []
     for p in (config.RemoteDirs.research_data / project_name / 'runs').glob('param*'):
 
@@ -43,6 +43,7 @@ def make_params_headers_and_rows(project_name):
         row = {headers[0]: to_param_id(p.name),
                headers[1]: get_time_modified(p),
                headers[2]: count_replications(project_name, p.name),
+               headers[3]: 'not-ludwig' in p.name,
                # used, but not displayed in table
                'param_name': p.name,
                'tooltip': tooltip,
