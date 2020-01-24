@@ -13,8 +13,6 @@
            class="mdl-button show-loading">Re-load</a>
         <a href="{{ url_for('home') }}"
            class="mdl-button show-loading">Back</a>
-        {#        TODO #}
-        <button class="mdl-button show-dialog">Params</button>
     </div>
 
     {% if rows %}
@@ -80,7 +78,7 @@
     <form action="{{ url_for('group_action', project_name=project_name) }}" id="form-group_action"></form>
 
     <div class="mdl-card__title ">
-        <h4 class="mdl-card__title-text">Multi Group Actions:</h4>
+        <h4 class="mdl-card__title-text">Actions:</h4>
     </div>
     <div class="mdl-card__actions mdl-card--border">
         {% for any_group_btn_name in any_group_btn_names %}
@@ -92,13 +90,10 @@
                        form="form-group_action">
             </div>
         {% endfor %}
-    </div>
+        <div class="mdl-cell mdl-cell--4-col">
+            <button class="mdl-button needs-2 show-dialog">Params</button>
+        </div>
 
-
-    <div class="mdl-card__title">
-        <h4 class="mdl-card__title-text">2 Group Actions:</h4>
-    </div>
-    <div class="mdl-card__actions mdl-card--border">
         {% for two_group_btn_name in two_group_btn_names %}
             <div class="mdl-cell mdl-cell--4-col">
                 <input type="submit"
@@ -175,7 +170,6 @@
 
             });
 
-            {#TODO test#}
             $('.show-dialog').click(function(){
                 var param_names = [];
                 $("input[name='param_name']:checked").each(function() {
