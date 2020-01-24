@@ -58,8 +58,17 @@ def plot(project_name):
 
     param_names = request.args.getlist('param_name') or session.get('param_names')
 
-    # TODO is there a way to plot confidence interval?
-    # TODO if not, then plot all the individual lines, instead of their average?
+    # special exception  # TODO move this somewhere else because this view is strictly for plots
+    if project_name == 'CreateWikiCorpus':
+
+        message = 'Coming Soon'
+
+        return render_template('message.html',
+                               topbar_dict=topbar_dict,
+                               project_name=project_name,
+                               param_names=param_names,
+                               title='Corpus statistics',
+                               message=message)
 
     # get all patterns (all possible csv file names) - assume each run has same pattern
     first_param_path = to_param_path(project_name, param_names[0])
@@ -86,6 +95,9 @@ def plot(project_name):
         json_chart = make_json_chart(data, column_name, title)
         # collect chart
         json_charts.append(json_chart)
+
+        # TODO is there a way to plot confidence interval?
+        # TODO if not, then plot all the individual lines, instead of their average?
 
     # get number of reps for each param_name
     param_name2n = {param_name: count_replications(project_name, param_name)
