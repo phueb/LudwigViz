@@ -43,5 +43,5 @@ class Projects:
 
 
 class Chart:
-    x_name = 'x'
+    x_name = 'step'  # this label may not be correct for all users
     scale_factor = 1.4

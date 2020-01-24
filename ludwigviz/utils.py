@@ -2,6 +2,7 @@ import datetime
 import re
 import json
 import pandas as pd
+from typing import List
 try:
     import altair
 except TypeError:
@@ -13,7 +14,10 @@ from ludwigviz import config
 regex_digit = re.compile(r'[0-9]+')
 
 
-def make_json_chart(data, column_name, title):
+def make_json_chart(data: pd.DataFrame,
+                    column_name: str,
+                    title: str,
+                    ) -> dict:
     """
     Example data:
         mean_ accuracy param_name
@@ -31,11 +35,12 @@ def make_json_chart(data, column_name, title):
 
     """
     # make index available for plotting (https://altair-viz.github.io/user_guide/data.html)
-    data = data.reset_index()
+    data = data.reset_index()  # inserts new column which was previously the index with col-name="index"
+    data.rename(columns={'index': config.Chart.x_name}, inplace=True)
 
     # make interactive chart and convert to json object
     chart = altair.Chart(data).mark_line().encode(
-        x='index:Q',
+        x=f'{config.Chart.x_name}:Q',
         y=column_name,
         color='param_name'
     ).interactive()
@@ -51,7 +56,10 @@ def make_json_chart(data, column_name, title):
     return json_chart
 
 
-def aggregate_data(project_name, param_names, pattern):
+def aggregate_data(project_name: str,
+                   param_names: List[str],
+                   pattern: str,
+                   ) -> pd.DataFrame:
     mean_dfs = []
     for param_name in param_names:
         # get all series matching pattern
