@@ -72,7 +72,7 @@ def plot(project_name):
 
     # get all patterns (all possible csv file names) - assume each run has same pattern
     first_param_path = to_param_path(project_name, param_names[0])
-    patterns = set([p.name for p in first_param_path.rglob('*.csv')])
+    patterns = sorted(set([p.name for p in first_param_path.rglob('*.csv')]))
 
     if not patterns:
         raise LudwigVizNoCsvFound(first_param_path)
