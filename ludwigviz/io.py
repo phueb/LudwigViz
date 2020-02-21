@@ -40,7 +40,7 @@ def make_params_headers_and_rows(project_name):
         for k, v in sorted(reduced_param2val.items()):
             tooltip += f'<p style="margin-bottom: 0px">{k}={v}</p>'
 
-        row = {headers[0]: to_param_id(p.name),
+        row = {headers[0]: f'{to_param_id(p.name):0>3}',
                headers[1]: get_time_modified(p),
                headers[2]: count_replications(project_name, p.name),
                headers[3]: 'not-ludwig' in p.name,
