@@ -41,7 +41,7 @@ def make_json_chart(data: pd.DataFrame,
     # make interactive chart and convert to json object
     chart = altair.Chart(data).mark_line().encode(
         x=f'{config.Chart.x_name}:Q',
-        y=column_name,
+        y=altair.Y(column_name, scale=altair.Scale(zero=False)),
         color='param_name'
     ).interactive()
 
