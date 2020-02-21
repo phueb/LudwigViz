@@ -61,7 +61,7 @@ def aggregate_data(project_name: str,
                    pattern: str,
                    ) -> pd.DataFrame:
     mean_dfs = []
-    for param_name in param_names:
+    for param_name in sorted(param_names, key=lambda n: int(n[6:])):
         # get all series matching pattern
         # squeeze=True tells pandas to return series
         param_path = to_param_path(project_name, param_name)
@@ -69,7 +69,7 @@ def aggregate_data(project_name: str,
         # average columns with the same name
         concatenated_df = pd.concat((s for s in series_list if len(s) > 1), axis=1)
         mean_df = concatenated_df.groupby(by=concatenated_df.columns, axis=1).mean()
-        mean_df['param_name'] = param_name
+        mean_df['param_name'] = f'param_{to_param_id(param_name):0>3}'  # zero-padding
         # rename
         old_name = mean_df.columns[0]
         new_name = 'mean_{}'.format(old_name)
@@ -78,6 +78,7 @@ def aggregate_data(project_name: str,
         mean_dfs.append(mean_df)
 
     res = pd.concat(mean_dfs, axis=0)  # raises Value error if list is empty
+    print(res)
     return res
 
 

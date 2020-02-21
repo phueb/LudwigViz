@@ -58,18 +58,6 @@ def plot(project_name):
 
     param_names = request.args.getlist('param_name') or session.get('param_names')
 
-    # special exception  # TODO move this somewhere else because this view is strictly for plots
-    if project_name == 'CreateWikiCorpus':
-
-        message = 'Coming Soon'
-
-        return render_template('message.html',
-                               topbar_dict=topbar_dict,
-                               project_name=project_name,
-                               param_names=param_names,
-                               title='Corpus statistics',
-                               message=message)
-
     # get all patterns (all possible csv file names) - assume each run has same pattern
     first_param_path = to_param_path(project_name, param_names[0])
     patterns = sorted(set([p.name for p in first_param_path.rglob('*.csv')]))
