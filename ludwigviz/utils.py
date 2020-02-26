@@ -38,10 +38,19 @@ def make_json_chart(data: pd.DataFrame,
     data = data.reset_index()  # inserts new column which was previously the index with col-name="index"
     data.rename(columns={'index': config.Chart.x_name}, inplace=True)
 
+    # y-scale
+    try:
+        y_lims = config.Chart.name2y_lims[column_name.lstrip('mean_')]
+    except KeyError:
+        y_scale = altair.Scale(zero=False)
+    else:
+        print('Using custom y-axis limits')
+        y_scale = altair.Scale(domain=y_lims)
+
     # make interactive chart and convert to json object
     chart = altair.Chart(data).mark_line().encode(
         x=f'{config.Chart.x_name}:Q',
-        y=altair.Y(column_name, scale=altair.Scale(zero=False)),
+        y=altair.Y(column_name, scale=y_scale),
         color='param_name'
     ).interactive()
 
@@ -59,6 +68,7 @@ def make_json_chart(data: pd.DataFrame,
 def aggregate_data(project_name: str,
                    param_names: List[str],
                    pattern: str,
+                   verbose: bool = False,
                    ) -> pd.DataFrame:
     mean_dfs = []
     for param_name in sorted(param_names, key=lambda n: int(n[6:])):
@@ -78,7 +88,10 @@ def aggregate_data(project_name: str,
         mean_dfs.append(mean_df)
 
     res = pd.concat(mean_dfs, axis=0)  # raises Value error if list is empty
-    print(res)
+
+    if verbose:
+        print(res)
+
     return res
 
 

@@ -45,3 +45,7 @@ class Projects:
 class Chart:
     x_name = 'step'  # this label may not be correct for all users
     scale_factor = 1.4
+
+    name2y_lims = {
+        'devel_pps': [1.0, 4.0],
+    }
