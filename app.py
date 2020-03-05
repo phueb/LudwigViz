@@ -78,7 +78,7 @@ def plot(project_name):
             print(f'WARNING: Failed ot aggregate data for pattern={pattern}')
             continue
         # make chart
-        title = ''  # pattern.rstrip('.csv').capitalize()
+        title = ''
         column_name = data.columns[0]
         json_chart = make_json_chart(data, column_name, title)
         # collect chart

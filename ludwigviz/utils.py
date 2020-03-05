@@ -2,6 +2,7 @@ import datetime
 import re
 import json
 import pandas as pd
+from pandas.core.groupby.groupby import DataError
 from typing import List
 try:
     import altair
@@ -77,7 +78,10 @@ def aggregate_data(project_name: str,
         param_path = to_param_path(project_name, param_name)
         series_list = [pd.read_csv(p, index_col=0, squeeze=True) for p in param_path.rglob(pattern)]
         # average columns with the same name
-        concatenated_df = pd.concat((s for s in series_list if len(s) > 1), axis=1)
+        try:
+            concatenated_df = pd.concat((s for s in series_list if len(s) > 1), axis=1)
+        except DataError:  # cannot group because data is malformed
+            raise ValueError  # to be caught by outside scope
         mean_df = concatenated_df.groupby(by=concatenated_df.columns, axis=1).mean()
         mean_df['param_name'] = f'param_{to_param_id(param_name):0>3}'  # zero-padding
         # rename

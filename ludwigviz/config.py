@@ -25,7 +25,7 @@ class LocalDirs:
 
 
 class Default:
-    header = 'Last modified'
+    header = 'Param'
     order = 'ascending'
 
 
@@ -47,5 +47,5 @@ class Chart:
     scale_factor = 1.4
 
     name2y_lims = {
-        'devel_pps': [1.0, 4.0],
+        'devel_pps': [1.0, 2.0],
     }
