@@ -47,5 +47,5 @@ class Chart:
     scale_factor = 1.4
 
     name2y_lims = {
-        'devel_pps': [1.0, 2.0],
+        'devel_pps': [1.0, 20.0],
     }
