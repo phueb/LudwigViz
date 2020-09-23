@@ -44,9 +44,3 @@ python app.py --dummy
 ```
 
 This tells the application to load csv files from a dummy location.
-
-## TODO
-
-* plotting of confidence-interval
-* implement deleting of data associated with runs
-* "compare" button is not used
