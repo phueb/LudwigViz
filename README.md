@@ -17,36 +17,18 @@ A browser interface for [Ludwig](https://github.com/phueb/Ludwig), a job submiss
 
 ## Starting the app
 
-A flask app can be run in at least 2 ways:
-1. `python -m flask run`
-2. `python app.py `
+Navigate to the root director, then enter:
+`python -m flask run`
 
-Pycharm uses method 1, and sets `FLASK_ENV` to "development'.
-Any `app.run()` call is ignored. 
+Pycharm uses this method, and sets `FLASK_ENV` to "development'.
 
-Method 2 is preferred because it allows custom argument parsing. 
-By default this results in `FLASK_ENV` set to "production". 
 
-## Technicalities
-
-### Compatibility
+## Compatibility
  
 Requires Python >= 3.5.3 (due to altair dependency)
 
 
-### Network Connection to Ludwig
+## Access to Shared Drive used by Ludwig
 
-If network connection is not available, 
-development is possible using the `--dummy` flag:
-
-```bash
-python app.py --dummy
-```
-
-This tells the application to load csv files from a dummy location.
-
-## TODO
-
-* plotting of confidence-interval
-* implement deleting of data associated with runs
-* "compare" button is not used
+If access to the shared drive (owned by UIUC Learning & Language Lab) is not available, the application will load dummy data from a dummy location.
+This is useful for development.

@@ -1,15 +1,28 @@
 from flask import Flask, redirect, url_for
 from flask import render_template
 from flask import request, session
-import argparse
 import socket
 import yaml
 
-import ludwigviz
+from ludwigviz import __version__, __package__
+from ludwigviz import configs
+from ludwigviz.io import make_params_headers_and_rows
+from ludwigviz.utils import sort_rows
+from ludwigviz.utils import to_param_path
+from ludwigviz.utils import aggregate_data
+from ludwigviz.utils import make_json_chart
+from ludwigviz.io import get_project_headers_and_rows
+from ludwigviz.io import count_replications
 
-hostname = socket.gethostname()
+
+topbar_dict = {'listing': configs.Dirs.research_data,
+               'hostname': socket.gethostname(),
+               'version': __version__,
+               'title': __package__.capitalize()
+               }
 
 app = Flask(__name__)
+app.secret_key = 'ja0f09'
 
 
 # ------------------------------------------------ views
@@ -30,8 +43,8 @@ def project(project_name):
 
     # sort
     if rows:
-        header = request.args.get('header') or config.Default.header
-        order = request.args.get('order') or config.Default.order
+        header = request.args.get('header') or configs.Default.header
+        order = request.args.get('order') or configs.Default.order
         rows = sort_rows(rows, header, order)
 
     return render_template('project.html',
@@ -39,8 +52,8 @@ def project(project_name):
                            project_name=project_name,
                            rows=rows,
                            headers=headers,
-                           two_group_btn_names=config.Buttons.two_group_btn_names,
-                           any_group_btn_names=config.Buttons.any_group_btn_names)
+                           two_group_btn_names=configs.Buttons.two_group_btn_names,
+                           any_group_btn_names=configs.Buttons.any_group_btn_names)
 
 
 @app.route('/<string:project_name>/plot', methods=['GET', 'POST'])
@@ -177,7 +190,7 @@ def delete_many(project_name):
         param_names = request.args.getlist('param_name')
 
         for param_name in param_names:
-            delete_path = config.RemoteDirs.research_data / project_name / 'runs' / param_name
+            delete_path = configs.Dirs.research_data / project_name / 'runs' / param_name
             print('Deleting {}'.format(delete_path))
 
             # TODO actually implement it
@@ -219,36 +232,6 @@ def page_not_found(exception):
                            topbar_dict=topbar_dict)
 
 
-# -------------------------------------------- start app from CL
 
 
-if __name__ == "__main__":  # pycharm does not use this
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--no_debug', action="store_false", default=True, dest='debug',
-                        help='Use this for deployment.')
-    parser.add_argument('--dummy', action="store_true", default=False, dest='dummy',
-                        help='Use a dummy directory - in case mounting does not work')
-    namespace = parser.parse_args()
 
-    if namespace.dummy:
-        ludwigviz.dummy_data = 'dummy_data'
-        print('Using dummy data')
-
-    # import after specifying path to data
-    from ludwigviz import config
-    from ludwigviz.io import make_params_headers_and_rows
-    from ludwigviz.utils import sort_rows
-    from ludwigviz.utils import to_param_path
-    from ludwigviz.utils import aggregate_data
-    from ludwigviz.utils import make_json_chart
-    from ludwigviz.io import get_project_headers_and_rows
-    from ludwigviz.io import count_replications
-
-    topbar_dict = {'listing': config.RemoteDirs.research_data,
-                   'hostname': hostname,
-                   'version': ludwigviz.__version__,
-                   'title': ludwigviz.__package__.capitalize()
-                   }
-
-    app.secret_key = 'ja0f09'
-    app.run(port=5001, debug=namespace.debug, host='0.0.0.0')

@@ -10,7 +10,7 @@ except TypeError:
     raise RuntimeError('altair requires Python > =3.5.3')
 
 
-from ludwigviz import config
+from ludwigviz import configs
 
 regex_digit = re.compile(r'[0-9]+')
 
@@ -37,11 +37,11 @@ def make_json_chart(data: pd.DataFrame,
     """
     # make index available for plotting (https://altair-viz.github.io/user_guide/data.html)
     data = data.reset_index()  # inserts new column which was previously the index with col-name="index"
-    data.rename(columns={'index': config.Chart.x_name}, inplace=True)
+    data.rename(columns={'index': configs.Chart.x_name}, inplace=True)
 
     # y-scale
     try:
-        y_lims = config.Chart.name2y_lims[column_name.lstrip('mean_')]
+        y_lims = configs.Chart.name2y_lims[column_name.lstrip('mean_')]
     except KeyError:
         y_scale = altair.Scale(zero=False)
     else:
@@ -50,7 +50,7 @@ def make_json_chart(data: pd.DataFrame,
 
     # make interactive chart and convert to json object
     chart = altair.Chart(data).mark_line().encode(
-        x=f'{config.Chart.x_name}:Q',
+        x=f'{configs.Chart.x_name}:Q',
         y=altair.Y(column_name, scale=y_scale),
         color='param_name'
     ).interactive()
@@ -60,8 +60,8 @@ def make_json_chart(data: pd.DataFrame,
     json_chart = json.loads(json_str)
 
     # set title and size
-    json_chart['config']['view']['height'] *= config.Chart.scale_factor
-    json_chart['config']['view']['width'] *= config.Chart.scale_factor
+    json_chart['config']['view']['height'] *= configs.Chart.scale_factor
+    json_chart['config']['view']['width'] *= configs.Chart.scale_factor
     json_chart['title'] = title
     return json_chart
 
@@ -100,7 +100,7 @@ def aggregate_data(project_name: str,
 
 
 def to_param_path(project_name, param_name):
-    return config.RemoteDirs.research_data / project_name / 'runs' / param_name
+    return configs.Dirs.research_data / project_name / 'runs' / param_name
 
 
 def sort_rows(rows, header, order):
@@ -110,7 +110,7 @@ def sort_rows(rows, header, order):
     if header == 'Last Modified':
         print('Sorting using datetime')
         res = sorted(rows,
-                     key=lambda row: datetime.datetime.strptime(row[header], config.Time.format),
+                     key=lambda row: datetime.datetime.strptime(row[header], configs.Time.format),
                      reverse=True if order == 'descending' else False)
     else:
         res = sorted(rows,
@@ -125,4 +125,4 @@ def to_param_id(param_name):
 
 def get_time_modified(p):
     return datetime.datetime.fromtimestamp(
-        p.lstat().st_mtime).strftime(config.Time.format)
+        p.lstat().st_mtime).strftime(configs.Time.format)
