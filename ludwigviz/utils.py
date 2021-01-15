@@ -100,7 +100,7 @@ def aggregate_data(project_name: str,
 
 
 def to_param_path(project_name, param_name):
-    return configs.Dirs.research_data / project_name / 'runs' / param_name
+    return configs.Dirs.ludwig_data / project_name / 'runs' / param_name
 
 
 def sort_rows(rows, header, order):

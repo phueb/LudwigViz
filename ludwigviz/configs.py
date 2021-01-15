@@ -4,11 +4,11 @@ import os
 
 class Dirs:
 
-    research_data = Path('/media') / 'research_data'
-    if not os.path.ismount(str(research_data)):
+    ludwig_data = Path('/media') / 'ludwig_data'
+    if not os.path.ismount(str(ludwig_data)):
         print('WARNING: {} not mounted.'
-              'Using dummy directory for development'.format(research_data))
-        research_data = Path('dummy_data')
+              'Using dummy directory for development'.format(ludwig_data))
+        ludwig_data = Path('dummy_data')
 
     root = Path(__file__).parent.parent
     src = root / 'ludwigviz'

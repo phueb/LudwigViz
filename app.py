@@ -15,7 +15,7 @@ from ludwigviz.io import get_project_headers_and_rows
 from ludwigviz.io import count_replications
 
 
-topbar_dict = {'listing': configs.Dirs.research_data,
+topbar_dict = {'listing': configs.Dirs.ludwig_data,
                'hostname': socket.gethostname(),
                'version': __version__,
                'title': __package__.capitalize()
@@ -190,7 +190,7 @@ def delete_many(project_name):
         param_names = request.args.getlist('param_name')
 
         for param_name in param_names:
-            delete_path = configs.Dirs.research_data / project_name / 'runs' / param_name
+            delete_path = configs.Dirs.ludwig_data / project_name / 'runs' / param_name
             print('Deleting {}'.format(delete_path))
 
             # TODO actually implement it

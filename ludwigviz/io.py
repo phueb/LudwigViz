@@ -11,7 +11,7 @@ def count_replications(project_name, param_name):
 def get_project_headers_and_rows():
     headers = ['Name', 'Last modified', 'Number of unique jobs']
     rows = []
-    for p in configs.Dirs.research_data.iterdir():
+    for p in configs.Dirs.ludwig_data.iterdir():
         if not p.name.startswith('.') and p.name not in configs.Projects.excluded:
             num_unique_jobs = len(list(p.glob('runs/param*')))
             if num_unique_jobs == 0:
@@ -27,7 +27,7 @@ def get_project_headers_and_rows():
 def make_params_headers_and_rows(project_name):
     headers = ['Param', 'Last modified', 'n']
     rows = []
-    for p in (configs.Dirs.research_data / project_name / 'runs').glob('param*'):
+    for p in (configs.Dirs.ludwig_data / project_name / 'runs').glob('param*'):
 
         # make param2val_reduced
         with (p / 'param2val.yaml').open('r') as f:
