@@ -83,6 +83,8 @@ def plot(project_name):
     # iterate over unique df file names (e.g. results_a.csv, results_b.csv)
     json_charts = []
     for pattern in patterns:
+        if any([True for e in configs.Default.excluded_patterns if pattern.startswith(e)]):
+            continue
         print('pattern="{}"'.format(pattern))
         # get data frame where each column represents a mean for a particular param_name
         try:

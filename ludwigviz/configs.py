@@ -20,6 +20,8 @@ class Default:
     header = 'Param'
     order = 'ascending'
 
+    excluded_patterns = 'df_sr'
+
 
 class Buttons:
     any_group_btn_names = ['plot']

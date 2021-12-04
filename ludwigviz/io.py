@@ -9,16 +9,16 @@ def count_replications(project_name, param_name):
 
 
 def get_project_headers_and_rows():
-    headers = ['Name', 'Last modified', 'Number of unique jobs']
+    headers = ['Name', 'Last modified', 'Number of param configurations']
     rows = []
     for p in configs.Dirs.ludwig_data.iterdir():
         if not p.name.startswith('.') and p.name not in configs.Projects.excluded:
-            num_unique_jobs = len(list(p.glob('runs/param*')))
-            if num_unique_jobs == 0:
+            num_param_configurations = len(list(p.glob('runs/param*')))
+            if num_param_configurations == 0:
                 continue
             row = {headers[0]: p.name,
                    headers[1]: get_time_modified(p),
-                   headers[2]: num_unique_jobs}
+                   headers[2]: num_param_configurations}
             rows.append(row)
 
     return headers, rows
