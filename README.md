@@ -1,7 +1,7 @@
 # LudwigViz
 
 
-A browser interface for [Ludwig](https://github.com/phueb/Ludwig), a job submission system used at the UIUC Learning & Language lab.
+A browser interface for visualizing results (e.g. training accuracy) saved by [Ludwig](https://github.com/phueb/Ludwig), a job submission system used at the UIUC Learning & Language lab.
 
 ## Features
 
